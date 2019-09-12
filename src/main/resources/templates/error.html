@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../favicon.ico"/>
+
+    <title th:text="Error " + ${errorcode}></title>
+
+    <link href="../static/bootstrap/css/bootstrap.css" rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.css}"/>
+</head>
+<body>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="error-template">
+                <h1>
+                    Oops!</h1>
+                <h2 th:text="${errorcode} +  ' ' + ${errordetails}"></h2>
+                <div class="error-details" th:text="'An unknown error has occured: ' + ${errordetails}"></div>
+                <div class="error-actions">
+                    <a href="/" class="btn btn-primary btn-lg"><span class="glyphicon glyphicon-home"></span>
+                        Take Me Home </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="../static/jquery/jquery.js" th:src="@{/jquery/jquery.js}"></script>
+<script src="../static/bootstrap/js/bootstrap.js" th:src="@{/bootstrap/js/bootstrap.js}"></script>
+</body>
+</html>

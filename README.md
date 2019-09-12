@@ -1,2 +1,2 @@
-# guestbook
+# controllers
 Test Java Spring webapp
