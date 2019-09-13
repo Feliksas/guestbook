@@ -14,13 +14,35 @@
 </head>
 <body>
 
-<h1>Here be dragons</h1>
-
-<div class="jumbotron">
-    <p th:text="'Gosh, look at the time: ' + ${#dates.format(datetime, 'dd MMM yyyy HH:mm:ss')} + ' - way too early! Come back later'"></p>
+<div class="container-fluid">
+    <th:block th:each="entry: ${guestBookEntries}">
+        <td th:text="${entry.name}">Name</td>
+        <td th:text="${entry.email}">Email</td>
+        <td th:text="${entry.content}">Feedback</td>
+    </th:block>
+    <h1>Leave your feedback!</h1>
+    <form action="#" th:action="@{/add}" th:object="${guestBookEntry}" method="post">
+        <div class="form-group">
+            <label for="userName">Your name</label>
+            <input type="text" class="form-control" id="userName"  th:field="*{name}" aria-describedby="nameHelp" placeholder="Name Surname" required>
+            <small id="nameHelp" class="form-text text-muted">How should we call you?</small>
+        </div>
+        <div class="form-group">
+            <label for="userEmail">Your e-mail</label>
+            <input type="email" class="form-control" id="userEmail" th:field="*{email}" aria-describedby="emailHelp" placeholder="name@service.tld" required>
+            <small id="emailHelp" class="form-text text-muted">In case we want to contact you</small>
+        </div>
+        <div class="form-group">
+            <label for="feedbackField">Write your review</label>
+            <input type="text" class="form-control" id="feedbackField" th:field="*{content}" aria-describedby="feedbackHelp" placeholder="Some kind words, please :)" required>
+            <small id="feedbackHelp" class="form-text text-muted">Please refrain from strong language</small>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
 </div>
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="../static/jquery/jquery.js" th:src="@{/jquery/jquery.js}"></script>
+<script src="../static/popper/popper.js" th:src="@{/popper/popper.js}"></script>
 <script src="../static/bootstrap/js/bootstrap.js" th:src="@{/bootstrap/js/bootstrap.js}"></script>
 </body>
 </html>
