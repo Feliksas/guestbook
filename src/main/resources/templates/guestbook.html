@@ -8,37 +8,55 @@
     <meta name="author" content="">
     <link rel="icon" href="../../favicon.ico"/>
 
-    <title>Under construction</title>
+    <title>Guestbook</title>
 
     <link href="../static/bootstrap/css/bootstrap.css" rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.css}"/>
 </head>
 <body>
 
 <div class="container-fluid">
-    <th:block th:each="entry: ${guestBookEntries}">
-        <td th:text="${entry.name}">Name</td>
-        <td th:text="${entry.email}">Email</td>
-        <td th:text="${entry.content}">Feedback</td>
-    </th:block>
-    <h1>Leave your feedback!</h1>
-    <form action="#" th:action="@{/add}" th:object="${guestBookEntry}" method="post">
+    <h2>Leave your feedback!</h2>
+    <form action="#" th:action="@{/add}" th:object="${feedbackForm}" method="post">
         <div class="form-group">
             <label for="userName">Your name</label>
-            <input type="text" class="form-control" id="userName"  th:field="*{name}" aria-describedby="nameHelp" placeholder="Name Surname" required>
+            <input type="text" class="form-control" id="userName"  th:field="*{name}" aria-describedby="nameHelp" maxlength="255" placeholder="Name Surname" required>
+            <td th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Name error</td>
             <small id="nameHelp" class="form-text text-muted">How should we call you?</small>
         </div>
         <div class="form-group">
             <label for="userEmail">Your e-mail</label>
-            <input type="email" class="form-control" id="userEmail" th:field="*{email}" aria-describedby="emailHelp" placeholder="name@service.tld" required>
+            <input type="email" class="form-control" id="userEmail" th:field="*{email}" aria-describedby="emailHelp" maxlength="255" placeholder="name@service.tld" required>
+            <td th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Email error</td>
             <small id="emailHelp" class="form-text text-muted">In case we want to contact you</small>
         </div>
         <div class="form-group">
             <label for="feedbackField">Write your review</label>
-            <input type="text" class="form-control" id="feedbackField" th:field="*{content}" aria-describedby="feedbackHelp" placeholder="Some kind words, please :)" required>
+            <textarea class="form-control" rows="3" id="feedbackField" th:field="*{feedback}" aria-describedby="feedbackHelp" maxlength="65535" placeholder="Some kind words, please :)" required></textarea>
+            <td th:if="${#fields.hasErrors('feedback')}" th:errors="*{feedback}">Email error</td>
             <small id="feedbackHelp" class="form-text text-muted">Please refrain from strong language</small>
         </div>
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>
+    <th:block>
+        <div class="alert alert-info" th:if="${success == 'true' && message != ''}" th:utext="${message}"></div>
+        <div class="alert alert-danger" th:if="${success == 'false' && message != ''}" th:utext="${message}"></div>
+    </th:block>
+</div>
+
+<div class="container-fluid">
+    <h2>What others said</h2>
+    <div class="row pre-scrollable">
+        <div class="col-md-6">
+            <th:block th:each="entry: ${guestBookEntries}">
+                <div class="blockquote clearfix">
+                    <h4 th:text="${entry.name}"></h4>
+                    <h6 th:text="${entry.email}"></h6>
+                    <small class="text-muted" th:text="${#temporals.format(entry.timeStamp,'dd/MMM/yyyy HH:mm')}"></small>
+                    <p th:text="${entry.content}"></p>
+                </div>
+            </th:block>
+        </div>
+    </div>
 </div>
 
 <script src="../static/jquery/jquery.js" th:src="@{/jquery/jquery.js}"></script>
