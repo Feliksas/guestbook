@@ -1,7 +1,6 @@
 package forms;
 
 import javax.validation.constraints.Email;
-import javax.validation.constraints.Max;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -12,10 +11,11 @@ public class FeedbackForm {
 
     @NotNull
     @Email
+    @Size(min=6,max=255)
     private String email;
 
     @NotNull
-    @Max(65535)
+    @Size(min=3, max=65535)
     private String feedback;
 
     public String getName() {
@@ -41,5 +41,4 @@ public class FeedbackForm {
     public void setFeedback(String feedback) {
         this.feedback = feedback;
     }
-
 }

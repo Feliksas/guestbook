@@ -1,9 +1,7 @@
 package models;
 
-import org.springframework.data.domain.Sort;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.PagingAndSortingRepository;
 
-public interface GuestBookRepository extends CrudRepository<GuestBookEntry, Integer>{
+public interface GuestBookRepository extends  PagingAndSortingRepository<GuestBookEntry, Integer>{
 
-    Iterable<GuestBookEntry> findAll(Sort timestamp);
 }

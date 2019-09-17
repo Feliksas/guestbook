@@ -19,35 +19,35 @@
     <form action="#" th:action="@{/add}" th:object="${feedbackForm}" method="post">
         <div class="form-group">
             <label for="userName">Your name</label>
-            <input type="text" class="form-control" id="userName"  th:field="*{name}" aria-describedby="nameHelp" maxlength="255" placeholder="Name Surname" required>
-            <td th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Name error</td>
+            <input type="text" class="form-control" id="userName"  th:field="*{name}" aria-describedby="nameHelp" maxlength="255" placeholder="Name Surname" required/>
+            <p th:if="${#fields.hasErrors('name')}" th:errors="*{name}" style="color:red;">Name error</p>
             <small id="nameHelp" class="form-text text-muted">How should we call you?</small>
         </div>
         <div class="form-group">
             <label for="userEmail">Your e-mail</label>
-            <input type="email" class="form-control" id="userEmail" th:field="*{email}" aria-describedby="emailHelp" maxlength="255" placeholder="name@service.tld" required>
-            <td th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Email error</td>
+            <input type="email" class="form-control" id="userEmail" th:field="*{email}" aria-describedby="emailHelp" maxlength="255" placeholder="name@service.tld" required/>
+            <p th:if="${#fields.hasErrors('email')}" th:errors="*{email}" style="color:red;">Email error</p>
             <small id="emailHelp" class="form-text text-muted">In case we want to contact you</small>
         </div>
         <div class="form-group">
             <label for="feedbackField">Write your review</label>
             <textarea class="form-control" rows="3" id="feedbackField" th:field="*{feedback}" aria-describedby="feedbackHelp" maxlength="65535" placeholder="Some kind words, please :)" required></textarea>
-            <td th:if="${#fields.hasErrors('feedback')}" th:errors="*{feedback}">Email error</td>
+            <p th:if="${#fields.hasErrors('feedback')}" th:errors="*{feedback}" style="color:red;">Feedback error</p>
             <small id="feedbackHelp" class="form-text text-muted">Please refrain from strong language</small>
         </div>
         <button type="submit" class="btn btn-primary">Submit</button>
+        <th:block>
+            <div class="alert alert-info" th:if="${!#fields.hasErrors()  && submitResultMessage != null}" th:utext="${submitResultMessage}"></div>
+            <div class="alert alert-danger" th:if="${#fields.hasErrors() && submitResultMessage != null}" th:utext="${submitResultMessage}"></div>
+        </th:block>
     </form>
-    <th:block>
-        <div class="alert alert-info" th:if="${success == 'true' && message != ''}" th:utext="${message}"></div>
-        <div class="alert alert-danger" th:if="${success == 'false' && message != ''}" th:utext="${message}"></div>
-    </th:block>
 </div>
 
-<div class="container-fluid">
+<div class="container-fluid" th:object="${guestBookEntriesBlock}">
     <h2>What others said</h2>
     <div class="row pre-scrollable">
         <div class="col-md-6">
-            <th:block th:each="entry: ${guestBookEntries}">
+            <th:block th:each="entry: ${guestBookEntriesBlock.get('guestBookEntries')}">
                 <div class="blockquote clearfix">
                     <h4 th:text="${entry.name}"></h4>
                     <h6 th:text="${entry.email}"></h6>
@@ -56,6 +56,19 @@
                 </div>
             </th:block>
         </div>
+    </div>
+    <div class="row" th:fragment="pagination">
+        <div class="col-md-2"></div>
+        <div class="col-md-8">
+            <nav aria-label="Pagination">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item" th:each="pageNumber : ${guestBookEntriesBlock.get('pageNumbers')}" >
+                        <a class="page-link" th:href="@{|/reviews/${pageNumber}|}" th:text="${pageNumber}">1</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        <div class="col-md-2"></div>
     </div>
 </div>
 
