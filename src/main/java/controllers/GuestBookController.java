@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import forms.FeedbackForm;
 import models.GuestBookEntry;
-import models.GuestBookRepository;
+import models.MessageRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,36 +26,35 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 public class GuestBookController {
-    private final String GUESTBOOK_FORM = "guestbook";
-    private final String GUESTBOOK_ENTRIES_BLOCK = "guestBookEntriesBlock";
+    private static final String GUESTBOOK_FORM = "guestbook";
+    private static final String GUESTBOOK_ENTRIES_BLOCK = "guestBookEntriesBlock";
+
+    private static final String MESSAGE_FAIL = "<strong>Error!</strong> Please check your input!";
+    private static final String MESSAGE_SUCCESS = "<strong>Success!</strong> Your feedback has been saved!";
+    private static final String MESSAGE_ATTR = "submitResultMessage";
 
     @Autowired
-    private GuestBookRepository guestBookRepository;
+    private MessageRepository messageRepository;
     private Logger log = LoggerFactory.getLogger(GuestBookController.class);
 
     @PostMapping(path = "/add")
     public String addGuestBookEntry(@Valid FeedbackForm feedbackForm,
                                     BindingResult bindingResult, Model model,
                                     RedirectAttributes redirectAttributes) {
-        final String MESSAGE_FAIL = "<strong>Error!</strong> Please check your input!";
-        final String MESSAGE_SUCCESS = "<strong>Success!</strong> Your feedback has been saved!";
-        final String MESSAGE_ATTR = "submitResultMessage";
-
         if (bindingResult.hasErrors()) {
             log.info(bindingResult.getAllErrors().toString());
             model.addAttribute(MESSAGE_ATTR, MESSAGE_FAIL);
             model.addAttribute(GUESTBOOK_ENTRIES_BLOCK, showGuestBookEntries(1));
             return GUESTBOOK_FORM;
         }
-        GuestBookEntry guestBookEntry = new GuestBookEntry();
-
-        guestBookEntry.setTimeStamp(LocalDateTime.now());
-        guestBookEntry.setName(feedbackForm.getName());
-        guestBookEntry.setEmail(feedbackForm.getEmail());
-        guestBookEntry.setContent(feedbackForm.getFeedback());
+        GuestBookEntry guestBookEntry = new GuestBookEntry()
+            .withTimeStamp(LocalDateTime.now())
+            .withName(feedbackForm.getName())
+            .withEmail(feedbackForm.getEmail())
+            .withContent(feedbackForm.getFeedback());
 
         redirectAttributes.addFlashAttribute(MESSAGE_ATTR, MESSAGE_SUCCESS);
-        guestBookRepository.save(guestBookEntry);
+        messageRepository.save(guestBookEntry);
 
         return "redirect:/";
     }
@@ -69,7 +68,7 @@ public class GuestBookController {
         HashMap<String, Object> guestBookEntriesBlock = new HashMap<>();
 
         PageRequest pageable = PageRequest.of(page - 1, 3, Sort.by("timeStamp").descending());
-        Page<GuestBookEntry> guestBookPage = guestBookRepository.findAll(pageable);
+        Page<GuestBookEntry> guestBookPage = messageRepository.findAll(pageable);
         int totalPages = guestBookPage.getTotalPages();
         if(totalPages > 0) {
             List<Integer> pageNumbers = IntStream.rangeClosed(1, totalPages).boxed().collect(Collectors.toList());

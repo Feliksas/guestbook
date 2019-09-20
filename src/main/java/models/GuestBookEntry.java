@@ -38,11 +38,17 @@ public class GuestBookEntry {
         return id;
     }
 
-    public void setId(Integer id) {
+    public GuestBookEntry withId(Integer id) {
         this.id = id;
+
+        return this;
     }
 
-    public void setTimeStamp(LocalDateTime timeStamp) { this.timeStamp = timeStamp; }
+    public GuestBookEntry withTimeStamp(LocalDateTime timeStamp) {
+        this.timeStamp = timeStamp;
+
+        return this;
+    }
 
     public LocalDateTime getTimeStamp() { return timeStamp; }
 
@@ -50,20 +56,28 @@ public class GuestBookEntry {
         return name;
     }
 
-    public void setName(String name) {
+    public GuestBookEntry withName(String name) {
         this.name = name;
+
+        return this;
     }
 
     public String getEmail() {
         return email;
     }
 
-    public void setEmail(String email) {
+    public GuestBookEntry withEmail(String email) {
         this.email = email;
+
+        return this;
     }
 
     public String getContent() { return content; }
 
-    public void setContent(String content) { this.content = content; }
+    public GuestBookEntry withContent(String content) {
+        this.content = content;
+
+        return this;
+    }
 
 }
