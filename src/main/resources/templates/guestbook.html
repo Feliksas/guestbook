@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
@@ -13,7 +14,23 @@
     <link href="../static/bootstrap/css/bootstrap.css" rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.css}"/>
 </head>
 <body>
-
+<div class="container float-right">
+    <div th:if="${param.loginerror}">
+        Invalid username and password.
+    </div>
+    <div th:if="${param.logout}">
+        You have been logged out.
+    </div>
+    <form class="form-inline float-right" th:action="@{/login}" method="post">
+        <label class="sr-only" for="loginName">Login name:</label>
+        <input type="text" class="form-control mb-2 mr-sm-2" id="loginName" name="username" placeholder="username" required>
+        <label class="sr-only" for="loginPass">Password:</label>
+        <input type="password" class="form-control mb-2 mr-sm-2" id="loginPass" name="password" placeholder="password" required/>
+        <input class="form-check-input mb-2 mr-sm-2" type="checkbox" name="remember-me" id="rememberMe">
+        <label class="form-check-label mb-2 mr-sm-2" for="rememberMe">Remember me</label>
+        <button type="submit" class="btn btn-primary mb-2">Log in</button>
+    </form>
+</div>
 <div class="container-fluid">
     <h2>Leave your feedback!</h2>
     <form action="#" th:action="@{/add}" th:object="${feedbackForm}" method="post">

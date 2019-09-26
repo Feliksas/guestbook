@@ -7,10 +7,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import forms.FeedbackForm;
-import models.GuestBookEntry;
-import models.MessageRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
+import models.messages.GuestBookEntry;
+import repository.messages.MessageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -25,6 +24,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
+@Slf4j
 public class GuestBookController {
     private static final String GUESTBOOK_FORM = "guestbook";
     private static final String GUESTBOOK_ENTRIES_BLOCK = "guestBookEntriesBlock";
@@ -35,7 +35,6 @@ public class GuestBookController {
 
     @Autowired
     private MessageRepository messageRepository;
-    private Logger log = LoggerFactory.getLogger(GuestBookController.class);
 
     @PostMapping(path = "/add")
     public String addGuestBookEntry(@Valid FeedbackForm feedbackForm,
@@ -47,11 +46,11 @@ public class GuestBookController {
             model.addAttribute(GUESTBOOK_ENTRIES_BLOCK, showGuestBookEntries(1));
             return GUESTBOOK_FORM;
         }
-        GuestBookEntry guestBookEntry = new GuestBookEntry()
-            .withTimeStamp(LocalDateTime.now())
-            .withName(feedbackForm.getName())
-            .withEmail(feedbackForm.getEmail())
-            .withContent(feedbackForm.getFeedback());
+        GuestBookEntry guestBookEntry = GuestBookEntry.builder()
+            .timeStamp(LocalDateTime.now())
+            .name(feedbackForm.getName())
+            .email(feedbackForm.getEmail())
+            .content(feedbackForm.getFeedback()).build();
 
         redirectAttributes.addFlashAttribute(MESSAGE_ATTR, MESSAGE_SUCCESS);
         messageRepository.save(guestBookEntry);
