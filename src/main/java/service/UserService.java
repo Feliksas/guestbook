@@ -3,6 +3,7 @@ package service;
 import java.util.Arrays;
 import java.util.HashSet;
 import models.auth.Role;
+
 import models.auth.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.scrypt.SCryptPasswordEncoder;

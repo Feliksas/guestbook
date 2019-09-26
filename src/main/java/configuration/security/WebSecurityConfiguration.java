@@ -1,11 +1,10 @@
 package configuration.security;
 
 
-import javax.annotation.sql.DataSourceDefinition;
 import javax.sql.DataSource;
-import configuration.datasources.AuthDataSourceConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -18,26 +17,23 @@ import org.springframework.security.crypto.scrypt.SCryptPasswordEncoder;
 @EnableWebSecurity
 public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
+    @Bean
+    public SCryptPasswordEncoder passwordEncoder() {
+        return new SCryptPasswordEncoder();
+    }
+
     @Autowired
-    private SCryptPasswordEncoder sCryptPasswordEncoder;
-
-    private DataSource dataSource;
-
-    @Value("${spring.queries.users-query}")
-    private String usersQuery;
-
-    @Value("${spring.queries.roles-query}")
-    private String rolesQuery;
+    private DataSource authDataSource;
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth)
         throws Exception {
         auth.
             jdbcAuthentication()
-            .usersByUsernameQuery(usersQuery)
-            .authoritiesByUsernameQuery(rolesQuery)
-            .dataSource(dataSource)
-            .passwordEncoder(sCryptPasswordEncoder);
+            .usersByUsernameQuery("SELECT USERNAME,PASSWORD FROM USER WHERE USERNAME=?")
+            .authoritiesByUsernameQuery("SELECT r.ROLE FROM (SELECT USER_ID FROM USER WHERE USERNAME=?) as u INNER JOIN USER_ROLE ur ON ur.USER_ID = u.USER_ID INNER JOIN ROLE r ON r.ROLE_ID = ur.ROLE_ID")
+            .dataSource(authDataSource)
+            .passwordEncoder(passwordEncoder());
 
     }
 
@@ -51,7 +47,9 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 "/jquery/**",
                 "/bootstrap/**",
                 "/popper/**",
-                "/error*")
+                "/error*",
+                "/console*",
+                "/console/**")
             .permitAll()
             .regexMatchers("/reviews/[0-9]+").permitAll()
             .antMatchers("/login*").permitAll()
@@ -74,5 +72,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .rememberMeParameter("remember-me")
                 .tokenValiditySeconds(86400)
             ;
+        http.csrf().disable();
+        http.headers().frameOptions().disable();
     }
 }
