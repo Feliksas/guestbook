@@ -18,6 +18,9 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "ROLE")
 public class Role {
+    public static final String ROLE_USER = "USER";
+    public static final String ROLE_ADMIN = "ADMIN";
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "ROLE_ID")

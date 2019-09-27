@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:th="http://www.thymeleaf.org">
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
@@ -13,15 +14,12 @@
 
     <link href="../static/bootstrap/css/bootstrap.css" rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.css}"/>
 </head>
+
 <body>
+<div class="alert alert-danger" th:if="${param.loginerror}" th:text="${param.reason}"></div>
+<div class="alert alert-info" th:if="${param.logout}">You have been logged out</div>
 <div class="container float-right">
-    <div th:if="${param.loginerror}">
-        Invalid username and password.
-    </div>
-    <div th:if="${param.logout}">
-        You have been logged out.
-    </div>
-    <form class="form-inline float-right" th:action="@{/login}" method="post">
+    <form sec:authorize="isAnonymous()" class="form-inline float-right" th:action="@{/login}" method="post">
         <label class="sr-only" for="loginName">Login name:</label>
         <input type="text" class="form-control mb-2 mr-sm-2" id="loginName" name="username" placeholder="username" required>
         <label class="sr-only" for="loginPass">Password:</label>
@@ -30,6 +28,10 @@
         <label class="form-check-label mb-2 mr-sm-2" for="rememberMe">Remember me</label>
         <button type="submit" class="btn btn-primary mb-2">Log in</button>
     </form>
+    <form sec:authorize="isAuthenticated()" class="form-inline float-right" th:action="@{/logout}" method="post">
+        <label class="mb-2 mr-sm-2" th:text="'Hello, ' + ${#authentication.getPrincipal().getDisplayName()}">Hello, %username%</label>
+        <button class="btn btn-primary mb-2">Log out</button>
+    </form>
 </div>
 <div class="container-fluid">
     <h2>Leave your feedback!</h2>
@@ -37,20 +39,20 @@
         <div class="form-group">
             <label for="userName">Your name</label>
             <input type="text" class="form-control" id="userName"  th:field="*{name}" aria-describedby="nameHelp" maxlength="255" placeholder="Name Surname" required/>
-            <p th:if="${#fields.hasErrors('name')}" th:errors="*{name}" style="color:red;">Name error</p>
             <small id="nameHelp" class="form-text text-muted">How should we call you?</small>
+            <div class="invalid-feedback" style="display: block" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Name error</div>
         </div>
         <div class="form-group">
             <label for="userEmail">Your e-mail</label>
             <input type="email" class="form-control" id="userEmail" th:field="*{email}" aria-describedby="emailHelp" maxlength="255" placeholder="name@service.tld" required/>
-            <p th:if="${#fields.hasErrors('email')}" th:errors="*{email}" style="color:red;">Email error</p>
             <small id="emailHelp" class="form-text text-muted">In case we want to contact you</small>
+            <div class="invalid-feedback" style="display: block" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Email error</div>
         </div>
         <div class="form-group">
             <label for="feedbackField">Write your review</label>
             <textarea class="form-control" rows="3" id="feedbackField" th:field="*{feedback}" aria-describedby="feedbackHelp" maxlength="65535" placeholder="Some kind words, please :)" required></textarea>
-            <p th:if="${#fields.hasErrors('feedback')}" th:errors="*{feedback}" style="color:red;">Feedback error</p>
             <small id="feedbackHelp" class="form-text text-muted">Please refrain from strong language</small>
+            <div class="invalid-feedback" style="display: block" th:if="${#fields.hasErrors('feedback')}" th:errors="*{feedback}">Feedback error</div>
         </div>
         <button type="submit" class="btn btn-primary">Submit</button>
         <th:block>

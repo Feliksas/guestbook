@@ -1,16 +1,14 @@
 package configuration.security;
 
 
-import javax.sql.DataSource;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import models.auth.Role;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.scrypt.SCryptPasswordEncoder;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 
 
 @Configuration
@@ -22,19 +20,9 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
         return new SCryptPasswordEncoder();
     }
 
-    @Autowired
-    private DataSource authDataSource;
-
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth)
-        throws Exception {
-        auth.
-            jdbcAuthentication()
-            .usersByUsernameQuery("SELECT USERNAME,PASSWORD FROM USER WHERE USERNAME=?")
-            .authoritiesByUsernameQuery("SELECT r.ROLE FROM (SELECT USER_ID FROM USER WHERE USERNAME=?) as u INNER JOIN USER_ROLE ur ON ur.USER_ID = u.USER_ID INNER JOIN ROLE r ON r.ROLE_ID = ur.ROLE_ID")
-            .dataSource(authDataSource)
-            .passwordEncoder(passwordEncoder());
-
+    @Bean
+    public AuthenticationFailureHandler customAuthenticationFailureHandler() {
+        return new CustomAuthenticationFailureHandler();
     }
 
     @Override
@@ -47,24 +35,29 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 "/jquery/**",
                 "/bootstrap/**",
                 "/popper/**",
+                "/webfonts/**",
+                "/fa/**",
                 "/error*",
                 "/console*",
-                "/console/**")
+                "/console/**",
+                "/scrypthash",
+                "/register")
             .permitAll()
             .regexMatchers("/reviews/[0-9]+").permitAll()
             .antMatchers("/login*").permitAll()
-            .anyRequest().authenticated()
+            .anyRequest().hasAnyAuthority(Role.ROLE_USER, Role.ROLE_ADMIN)
 
             .and()
             .formLogin()
                 .loginProcessingUrl("/login")
-                .failureUrl("/?loginerror")
+                .failureHandler(customAuthenticationFailureHandler())
                 .defaultSuccessUrl("/")
                 .permitAll()
 
             .and()
             .logout()
                 .permitAll()
+                .logoutSuccessUrl("/?logout")
                 .deleteCookies("JSESSIONID")
 
             .and()

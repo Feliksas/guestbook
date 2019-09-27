@@ -8,7 +8,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -24,21 +23,18 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 public class AuthDataSourceConfiguration {
 
     @Bean
-    @Primary
     @ConfigurationProperties("guestbook.datasource.auth")
     public DataSourceProperties authDataSourceProperties(){
         return new DataSourceProperties();
     }
 
     @Bean(name = "authDataSource")
-    @Primary
     public DataSource authDataSource() {
         return authDataSourceProperties().initializeDataSourceBuilder()
             .type(HikariDataSource.class).build();
     }
 
     @Bean
-    @Primary
     public LocalContainerEntityManagerFactoryBean
     authEntityManagerFactory(EntityManagerFactoryBuilder builder) {
         return builder
@@ -48,7 +44,6 @@ public class AuthDataSourceConfiguration {
     }
 
     @Bean
-    @Primary
     public PlatformTransactionManager authTransactionManager(
         final @Qualifier("authEntityManagerFactory") LocalContainerEntityManagerFactoryBean
         authEntityManagerFactory) {

@@ -8,6 +8,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -23,18 +24,21 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 public class MessagesDataSourceConfiguration {
 
     @Bean
+    @Primary
     @ConfigurationProperties("guestbook.datasource.messages")
     public DataSourceProperties messagesDataSourceProperties() {
         return new DataSourceProperties();
     }
 
     @Bean(name = "messagesDataSource")
+    @Primary
     public DataSource messagesDataSource() {
         return messagesDataSourceProperties().initializeDataSourceBuilder()
             .type(HikariDataSource.class).build();
     }
 
     @Bean
+    @Primary
     public LocalContainerEntityManagerFactoryBean
     messagesEntityManagerFactory(EntityManagerFactoryBuilder builder) {
         return builder
@@ -44,6 +48,7 @@ public class MessagesDataSourceConfiguration {
     }
 
     @Bean
+    @Primary
     public PlatformTransactionManager messagesTransactionManager(
         final @Qualifier("messagesEntityManagerFactory") LocalContainerEntityManagerFactoryBean
             messagesEntityManagerFactory) {

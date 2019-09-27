@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../favicon.ico"/>
+
+    <title>Guestbook registration</title>
+
+    <link href="../static/bootstrap/css/bootstrap.css" rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.css}"/>
+    <link href="../static/fa/all.css" rel="stylesheet" th:href="@{/fa/all.css}">
+</head>
+
+<div class="container">
+    <hr>
+    <div class="card bg-light">
+        <article class="card-body mx-auto" style="max-width: 400px;">
+            <h4 class="card-title mt-3 text-center">Create Account</h4>
+            <form action="#" th:action="@{/register}" th:object="${registrationForm}" method="post"
+                  oninput='password.setCustomValidity(confirm_password.value != password.value ? "Passwords do not match." : "")'>
+                <div class="form-group input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"> <i class="fa fa-address-card"></i> </span>
+                    </div>
+                    <input name="fullName" class="form-control" placeholder="Full name" type="text" required>
+                    <div class="invalid-feedback" style="display: block" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}">Name error</div>
+                </div> <!-- form-group// -->
+                <div class="form-group input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"> <i class="fa fa-user"></i> </span>
+                    </div>
+                    <input name="userName" class="form-control" placeholder="Username" type="text" required>
+                    <div class="invalid-feedback" style="display: block" th:if="${#fields.hasErrors('userName')}" th:errors="*{userName}">Username error</div>
+                    <div class="invalid-feedback" style="display: block" th:if="${userExists}">User with such username already exists</div>
+                </div> <!-- form-group// -->
+                <div class="form-group input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"> <i class="fa fa-envelope"></i> </span>
+                    </div>
+                    <input name="email" class="form-control" placeholder="Email address" type="email" required>
+                    <div class="invalid-feedback" style="display: block" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Email error</div>
+                    <div class="invalid-feedback" style="display: block" th:if="${emailExists}">User with such e-mail address already exists</div>
+                </div> <!-- form-group// -->
+                <div class="form-group input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"> <i class="fa fa-lock"></i> </span>
+                    </div>
+                    <input class="form-control" placeholder="Create password" type="password" name="password" required>
+                    <div class="invalid-feedback" style="display: block" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Password error</div>
+                </div> <!-- form-group// -->
+                <div class="form-group input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"> <i class="fa fa-lock"></i> </span>
+                    </div>
+                    <input class="form-control" placeholder="Repeat password" type="password" name="confirm_password" required>
+                </div> <!-- form-group// -->
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary btn-block"> Create Account  </button>
+                </div> <!-- form-group// -->
+                <th:block>
+                    <div class="alert alert-danger" th:if="${#fields.hasErrors() && submitResultMessage != null}" th:utext="${submitResultMessage}"></div>
+                </th:block>
+            </form>
+        </article>
+    </div> <!-- card.// -->
+
+</div>
+<!--container end.//-->
+
+<script src="../static/jquery/jquery.js" th:src="@{/jquery/jquery.js}"></script>
+<script src="../static/popper/popper.js" th:src="@{/popper/popper.js}"></script>
+<script src="../static/bootstrap/js/bootstrap.js" th:src="@{/bootstrap/js/bootstrap.js}"></script>
+</body>
+</html>
