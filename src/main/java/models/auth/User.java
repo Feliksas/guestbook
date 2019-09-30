@@ -19,7 +19,6 @@ import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import java.util.Set;
 
 @Data
@@ -28,11 +27,10 @@ import java.util.Set;
 @NoArgsConstructor
 @Entity
 @Table(name = "USER")
-
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "USER_ID")
+    @Column(name = "ID")
     private int id;
 
     @Column(name = "USERNAME", unique = true)
@@ -58,7 +56,9 @@ public class User {
     @Column(name = "ACTIVE", nullable = false)
     private boolean active;
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch= FetchType.EAGER)
-    @JoinTable(name = "USER_ROLE", joinColumns = @JoinColumn(name = "USER_ID"), inverseJoinColumns = @JoinColumn(name = "ROLE_ID"))
+    @ManyToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    @JoinTable(name = "USER_ROLES",
+               joinColumns = {@JoinColumn(name = "USER_ID", referencedColumnName = "ID")},
+               inverseJoinColumns = {@JoinColumn(name = "ROLE_ID", referencedColumnName = "ID")})
     private Set<Role> roles;
 }

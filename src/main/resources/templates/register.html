@@ -22,19 +22,19 @@
         <article class="card-body mx-auto" style="max-width: 400px;">
             <h4 class="card-title mt-3 text-center">Create Account</h4>
             <form action="#" th:action="@{/register}" th:object="${registrationForm}" method="post"
-                  oninput='password.setCustomValidity(confirm_password.value != password.value ? "Passwords do not match." : "")'>
+                  oninput='confirm_password.setCustomValidity(password.value != confirm_password.value ? "Passwords do not match." : "")'>
                 <div class="form-group input-group">
                     <div class="input-group-prepend">
                         <span class="input-group-text"> <i class="fa fa-address-card"></i> </span>
                     </div>
-                    <input name="fullName" class="form-control" placeholder="Full name" type="text" required>
+                    <input name="fullName" class="form-control" th:field="*{fullName}" placeholder="Full name" type="text" required>
                     <div class="invalid-feedback" style="display: block" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}">Name error</div>
                 </div> <!-- form-group// -->
                 <div class="form-group input-group">
                     <div class="input-group-prepend">
                         <span class="input-group-text"> <i class="fa fa-user"></i> </span>
                     </div>
-                    <input name="userName" class="form-control" placeholder="Username" type="text" required>
+                    <input name="userName" class="form-control" th:field="*{userName}" placeholder="Username" type="text" required>
                     <div class="invalid-feedback" style="display: block" th:if="${#fields.hasErrors('userName')}" th:errors="*{userName}">Username error</div>
                     <div class="invalid-feedback" style="display: block" th:if="${userExists}">User with such username already exists</div>
                 </div> <!-- form-group// -->
@@ -42,7 +42,7 @@
                     <div class="input-group-prepend">
                         <span class="input-group-text"> <i class="fa fa-envelope"></i> </span>
                     </div>
-                    <input name="email" class="form-control" placeholder="Email address" type="email" required>
+                    <input name="email" class="form-control" th:field="*{email}" placeholder="Email address" type="email" required>
                     <div class="invalid-feedback" style="display: block" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Email error</div>
                     <div class="invalid-feedback" style="display: block" th:if="${emailExists}">User with such e-mail address already exists</div>
                 </div> <!-- form-group// -->

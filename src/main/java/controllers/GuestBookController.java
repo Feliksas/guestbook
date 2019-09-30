@@ -26,7 +26,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Controller
 @Slf4j
 public class GuestBookController {
-    private static final String GUESTBOOK_FORM = "guestbook";
+    private static final String GUESTBOOK_VIEW = "guestbook";
     private static final String GUESTBOOK_ENTRIES_BLOCK = "guestBookEntriesBlock";
 
     private static final String MESSAGE_FAIL = "<strong>Error!</strong> Please check your input!";
@@ -44,7 +44,7 @@ public class GuestBookController {
             log.info(bindingResult.getAllErrors().toString());
             model.addAttribute(MESSAGE_ATTR, MESSAGE_FAIL);
             model.addAttribute(GUESTBOOK_ENTRIES_BLOCK, showGuestBookEntries(1));
-            return GUESTBOOK_FORM;
+            return GUESTBOOK_VIEW;
         }
         GuestBookEntry guestBookEntry = GuestBookEntry.builder()
             .timeStamp(LocalDateTime.now())
@@ -81,12 +81,12 @@ public class GuestBookController {
     @GetMapping(path = "/")
     public String showGuestBook(Model model) {
         model.addAttribute(GUESTBOOK_ENTRIES_BLOCK, showGuestBookEntries(1));
-        return GUESTBOOK_FORM;
+        return GUESTBOOK_VIEW;
     }
 
     @GetMapping(path = "/reviews/{page}")
     public String showGuestBookByPage(@PathVariable("page") int page, Model model) {
         model.addAttribute(GUESTBOOK_ENTRIES_BLOCK, showGuestBookEntries(page));
-        return GUESTBOOK_FORM;
+        return GUESTBOOK_VIEW;
     }
 }

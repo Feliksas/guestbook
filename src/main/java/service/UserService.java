@@ -1,11 +1,12 @@
 package service;
 
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import exceptions.AccountExistsException;
 import exceptions.EmailExistsException;
 import exceptions.UserNameExistsException;
+import lombok.extern.slf4j.Slf4j;
 import models.auth.Role;
 import models.auth.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ import repository.auth.UserRepository;
 
 @Service
 @Transactional
+@Slf4j
 public class UserService implements UserDetailsService {
     @Autowired
     private UserRepository userRepository;
@@ -29,10 +31,11 @@ public class UserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUserNameOrEmail(username, username);
+        User user = userRepository.findByUserNameOrEmailWithEagerRoles(username, username);
         if (user == null) {
             throw new UsernameNotFoundException(username);
         }
+
         return new UserPrincipal(user);
     }
 
@@ -48,27 +51,27 @@ public class UserService implements UserDetailsService {
             throw new UserNameExistsException(String.format("User with username %s already exists", userName));
         } else {
             Role role = roleRepository.findByRole(Role.ROLE_USER);
-            user.setRoles(new HashSet<>(Arrays.asList(role)));
+            if (role == null) {
+                log.info(String.format("Role \"%s\" does not exist, creating", Role.ROLE_USER));
+                role = Role.builder().role(Role.ROLE_USER).build();
+            }
+
+            user.setRoles(new HashSet<>(Collections.singletonList(role)));
             user.setPassword(passwordEncoder.encode(user.getPassword()));
             user.setActive(true);
+
             return userRepository.save(user);
         }
     }
 
     private boolean emailExists(String email) {
         User user = userRepository.findByEmail(email);
-        if ( user != null) {
-            return true;
-        }
-        return false;
+        return user != null;
     }
 
     private boolean userNameExists(String userName) {
         User user = userRepository.findByUserName(userName);
-        if ( user != null) {
-            return true;
-        }
-        return false;
+        return user != null;
     }
 }
 

@@ -19,7 +19,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableJpaRepositories(basePackages = "repository.auth",
   entityManagerFactoryRef = "authEntityManagerFactory",
   transactionManagerRef = "authTransactionManager")
-
 public class AuthDataSourceConfiguration {
 
     @Bean

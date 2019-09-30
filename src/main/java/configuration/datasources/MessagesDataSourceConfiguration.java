@@ -20,7 +20,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableJpaRepositories(basePackages = "repository.messages",
     entityManagerFactoryRef = "messagesEntityManagerFactory",
     transactionManagerRef = "messagesTransactionManager")
-
 public class MessagesDataSourceConfiguration {
 
     @Bean

@@ -2,6 +2,7 @@ package configuration.security;
 
 
 import models.auth.Role;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -9,6 +10,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.scrypt.SCryptPasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import service.UserService;
 
 
 @Configuration
@@ -25,6 +27,9 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
         return new CustomAuthenticationFailureHandler();
     }
 
+    @Autowired
+    private UserService userService;
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
@@ -38,13 +43,13 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 "/webfonts/**",
                 "/fa/**",
                 "/error*",
-                "/console*",
                 "/console/**",
                 "/scrypthash",
                 "/register")
             .permitAll()
             .regexMatchers("/reviews/[0-9]+").permitAll()
             .antMatchers("/login*").permitAll()
+            .antMatchers("/admin/**").hasAuthority(Role.ROLE_ADMIN)
             .anyRequest().hasAnyAuthority(Role.ROLE_USER, Role.ROLE_ADMIN)
 
             .and()
@@ -63,6 +68,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
             .and()
             .rememberMe().key("CHANGEME")
                 .rememberMeParameter("remember-me")
+                 .userDetailsService(userService)
                 .tokenValiditySeconds(86400)
             ;
         http.csrf().disable();

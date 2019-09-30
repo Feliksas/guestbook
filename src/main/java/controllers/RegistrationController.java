@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import service.UserService;
@@ -18,7 +19,7 @@ import service.UserService;
 @Controller
 @Slf4j
 public class RegistrationController {
-    private static final String REGISTRATION_FORM = "register";
+    private static final String REGISTRATION_VIEW = "register";
 
     private static final String USER_EXISTS = "userExists";
     private static final String EMAIL_EXISTS = "emailExists";
@@ -29,10 +30,12 @@ public class RegistrationController {
     @Autowired
     private UserService userService;
 
+    @ModelAttribute("registrationForm")
+    public RegistrationForm showRegistrationForm() { return new RegistrationForm(); }
+
     @GetMapping(path="/register")
     public String newUserRegistration(Model model) {
-        model.addAttribute("registrationForm", new RegistrationForm());
-        return REGISTRATION_FORM;
+        return REGISTRATION_VIEW;
     }
 
     @PostMapping(path="/register")
@@ -43,7 +46,7 @@ public class RegistrationController {
         if (bindingResult.hasErrors()) {
             log.info(bindingResult.getAllErrors().toString());
             model.addAttribute(MESSAGE_ATTR, MESSAGE_FAIL);
-            return REGISTRATION_FORM;
+            return REGISTRATION_VIEW;
         }
 
         User user = User.builder()
@@ -62,7 +65,7 @@ public class RegistrationController {
                 model.addAttribute(USER_EXISTS, true);
             }
             model.addAttribute(MESSAGE_ATTR, MESSAGE_FAIL);
-            return REGISTRATION_FORM;
+            return REGISTRATION_VIEW;
         }
 
         return "redirect:/";
