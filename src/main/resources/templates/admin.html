@@ -29,21 +29,21 @@
             </thead>
             <tbody>
                 <th:block th:each="user, userStat: ${usersTable.users}">
+                    <input type="text" hidden th:name="|users[${userStat.index}].id|" th:field="${user.getId()}"/>
                     <tr>
                         <td contenteditable="true" th:name="|users[${userStat.index}].userName|" th:text="${user.getUserName()}"></td>
                         <td contenteditable="true" th:name="|users[${userStat.index}].displayName|" th:text="${user.getDisplayName()}"></td>
                         <td contenteditable="true" th:name="|users[${userStat.index}].email|" th:text="${user.getEmail()}"></td>
                         <td>
                             <select class="dropdown" multiple  th:name = "|users[${userStat.index}].roles|" th:size="${availableRoles.size()}">
-                                <th:block th:each="role: ${availableRoles}">
-                                    <option th:value="${role.getRole()}" th:text="${role.getRole()}" th:selected="${user.getRoles().contains(role)}"></option>
-                                </th:block>
+                                <option th:each="role: ${availableRoles}" th:value="${role.getRole()}" th:text="${role.getRole()}" th:selected="${user.getRoles().contains(role)}"></option>
                             </select>
                         </td>
                     </tr>
                 </th:block>
             </tbody>
         </table>
+        <button type="submit" class="btn btn-primary">Submit</button>
     </form>
 </div>
 <!--container end.//-->

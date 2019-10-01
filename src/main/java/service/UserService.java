@@ -16,7 +16,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.scrypt.SCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import repository.auth.RoleRepository;
 import repository.auth.UserRepository;
 
 @Service
@@ -25,9 +24,6 @@ import repository.auth.UserRepository;
 public class UserService implements UserDetailsService {
     @Autowired
     private UserRepository userRepository;
-
-    @Autowired
-    private RoleRepository roleRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -50,12 +46,7 @@ public class UserService implements UserDetailsService {
         } else if (userNameExists(userName)) {
             throw new UserNameExistsException(String.format("User with username %s already exists", userName));
         } else {
-            Role role = roleRepository.findByRole(Role.ROLE_USER);
-            if (role == null) {
-                log.info(String.format("Role \"%s\" does not exist, creating", Role.ROLE_USER));
-                role = Role.builder().role(Role.ROLE_USER).build();
-            }
-
+            Role role = Role.ROLE_USER;
             user.setRoles(new HashSet<>(Collections.singletonList(role)));
             user.setPassword(passwordEncoder.encode(user.getPassword()));
             user.setActive(true);
