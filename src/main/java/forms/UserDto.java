@@ -5,13 +5,16 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import models.auth.Role;
 import models.auth.User;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class UserDto {
     private int id;
 
@@ -39,7 +42,7 @@ public class UserDto {
 
     public UserDto(User user) {
         this.id = user.getId();
-        this.userName = getUserName();
+        this.userName = user.getUserName();
         this.displayName = user.getDisplayName();
         this.password = null;
         this.email = user.getEmail();
@@ -53,5 +56,10 @@ public class UserDto {
 
     public boolean equals(User user) {
         return user.getId() == this.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getUserName(), getDisplayName(), getPassword(), getEmail(), getActive(), isDelete(), getRoles());
     }
 }

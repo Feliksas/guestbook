@@ -28,17 +28,25 @@
                 <th scope="col">Actions</th>
             </thead>
             <tbody>
-                <th:block th:each="user, userStat: ${usersTable.users}">
-                    <input type="text" hidden th:name="|users[${userStat.index}].id|" th:field="${user.getId()}"/>
+                <th:block th:each="user,iter : *{users}">
+                    <input type="text" hidden th:field="*{users[__${iter.index}__].id}"/>
                     <tr>
-                        <td contenteditable="true" th:name="|users[${userStat.index}].userName|" th:text="${user.getUserName()}"></td>
-                        <td contenteditable="true" th:name="|users[${userStat.index}].displayName|" th:text="${user.getDisplayName()}"></td>
-                        <td contenteditable="true" th:name="|users[${userStat.index}].email|" th:text="${user.getEmail()}"></td>
-                        <td>
-                            <select class="dropdown" multiple  th:name = "|users[${userStat.index}].roles|" th:size="${availableRoles.size()}">
-                                <option th:each="role: ${availableRoles}" th:value="${role.getRole()}" th:text="${role.getRole()}" th:selected="${user.getRoles().contains(role)}"></option>
-                            </select>
-                        </td>
+                        <div class="form-group">
+                            <td><input th:field="*{users[__${iter.index}__].userName}"/></td>
+                            <td><input th:field="*{users[__${iter.index}__].displayName}"/></td>
+                            <td><input th:field="*{users[__${iter.index}__].email}"/></td>
+                            <td>
+                                <select class="custom-select mb-2 mr-sm-2 mb-sm-0" multiple  th:field="*{users[__${iter.index}__].roles}" th:size="${availableRoles.size()}">
+                                    <option th:each="role: ${availableRoles}" th:value="${role.getRole()}" th:text="${role.getRole()}" th:selected="${user.getRoles().contains(role)}"></option>
+                                </select>
+                            </td>
+                            <td>
+                                <input type="checkbox" th:field="*{users[__${iter.index}__].active}"/>
+                                <label th:for="*{users[__${iter.index}__].active}">Active</label>
+                                <input type="checkbox" th:field="*{users[__${iter.index}__].delete}"/>
+                                <label th:for="*{users[__${iter.index}__].delete}">Delete</label>
+                            </td>
+                        </div>
                     </tr>
                 </th:block>
             </tbody>
