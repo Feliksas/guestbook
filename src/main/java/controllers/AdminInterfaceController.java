@@ -2,9 +2,7 @@ package controllers;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import forms.UserDto;
 import forms.UserListDto;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.scrypt.SCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,50 +31,52 @@ public class AdminInterfaceController {
     @Autowired
     RoleRepository roleRepository;
 
-    private void fromDtoToEntity (UserDto dto, User entity) {
-        Set<Role> newRoles = new HashSet<>();
 
+    private void fromDtoToEntity (UserDto dto, User entity) {
         entity.setUserName(dto.getUserName());
         entity.setDisplayName(dto.getDisplayName());
         entity.setEmail(dto.getEmail());
         entity.setActive(dto.getActive());
-        entity.setRoles(newRoles);
 
         String rawPassword = dto.getPassword();
         if (rawPassword != null) {
             entity.setPassword(new SCryptPasswordEncoder().encode(rawPassword));
         }
 
-        for (String rawRole : dto.getRoles()) {
-            Role dbRole = roleRepository.findByRole(rawRole);
-            if (dbRole != null) {
-                entity.getRoles().add(dbRole);
-                roleRepository.save(dbRole);
+        List<String> dtoRoles = dto.getRoles();
+
+        for (String rawRole : dtoRoles) {
+            Role dbRole = Role.getRoleByName(rawRole);
+            if (dbRole != null) { // such a role, indeed, exists in the system
+                entity.addRole(dbRole);
+            }
+        }
+
+        for (Role userRole: entity.getRoles()) {
+            if (!dtoRoles.contains(userRole.getRole())) {
+                entity.removeRole(userRole);
             }
         }
     }
 
     private UserListDto listUsers() {
-        List<UserDto> dtoUsers = new ArrayList<>();
+        UserListDto dtoUsers= new UserListDto();
         List<User> dbUsers = userRepository.findAllWithRoles(Sort.by(Sort.Direction.ASC, "userName"));
         for (User user: dbUsers) {
-            dtoUsers.add(new UserDto(user));
+            dtoUsers.addUser(user);
         }
-        UserListDto userList = new UserListDto(dtoUsers);
-        log.debug(userList.toString());
-        return userList;
+        return dtoUsers;
     }
-
-    List<Role> listRoles() { return roleRepository.findAll(Sort.by(Sort.Direction.ASC, "role"));}
 
     @GetMapping(path="/admin")
     public String showAdminPanel(Model model) {
         model.addAttribute("usersTable", listUsers());
-        model.addAttribute("availableRoles", listRoles());
+        model.addAttribute("availableRoles", Role.getAllRoles());
         return ADMIN_VIEW;
     }
 
     @PostMapping(path="/admin")
+    @Transactional
     public String saveUsers(@Valid UserListDto form, Model model, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             log.info(bindingResult.getAllErrors().toString());
@@ -120,6 +121,6 @@ public class AdminInterfaceController {
         userRepository.saveAll(dbUsers);
         userRepository.deleteAll(toDelete);
 
-        return ADMIN_VIEW;
+        return "redirect:/admin";
     }
 }

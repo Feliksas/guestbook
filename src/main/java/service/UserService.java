@@ -47,7 +47,7 @@ public class UserService implements UserDetailsService {
             throw new UserNameExistsException(String.format("User with username %s already exists", userName));
         } else {
             Role role = Role.ROLE_USER;
-            user.setRoles(new HashSet<>(Collections.singletonList(role)));
+            user.addRole(role);
             user.setPassword(passwordEncoder.encode(user.getPassword()));
             user.setActive(true);
 
