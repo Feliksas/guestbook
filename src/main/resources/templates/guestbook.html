@@ -30,6 +30,7 @@
     </form>
     <form sec:authorize="isAuthenticated()" class="form-inline float-right" th:action="@{/logout}" method="post">
         <label class="mb-2 mr-sm-2" th:text="'Hello, ' + ${#authentication.getPrincipal().getDisplayName()}">Hello, %username%</label>
+        <a sec:authorize="hasAuthority('ADMIN')" href="/admin" class="btn btn-warning mb-2">Administration</a>
         <button class="btn btn-primary mb-2">Log out</button>
     </form>
 </div>

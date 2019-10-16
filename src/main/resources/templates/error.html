@@ -23,8 +23,11 @@
                 <h2 th:text="${errorcode} +  ' ' + ${errordetails}"></h2>
                 <div class="error-details" th:text="'An unknown error has occured: ' + ${errordetails}"></div>
                 <div class="error-actions">
-                    <a href="/" class="btn btn-primary btn-lg"><span class="glyphicon glyphicon-home"></span>
-                        Take Me Home </a>
+                    <a href="#" id="goBack" class="btn btn-primary btn-lg"><span class="glyphicon glyphicon-home"></span>
+                        Take Me Whence I Cameth </a>
+                    <script type="text/javascript">
+                        document.getElementById("goBack").setAttribute("href", document.referrer);
+                    </script>
                 </div>
             </div>
         </div>

@@ -14,12 +14,14 @@
 
     <link href="../static/bootstrap/css/bootstrap.css" rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.css}"/>
     <link href="../static/fa/all.css" rel="stylesheet" th:href="@{/fa/all.css}">
+    <link href="../static/css/main.css" rel="stylesheet" th:href="@{/css/main.css}"/>
 </head>
 
 <div class="container">
+    <a href="/" class="btn btn-info float-right">Back to main page</a>
     <h2>User administration</h2>
     <form action="#" th:action="@{/admin}" th:object="${usersTable}" method="post">
-        <table class="table pre-scrollable table-bordered table-hover table-sm">
+        <table class="table pre-scrollable table-bordered table-sm">
             <thead class="thead-dark">
                 <th scope="col">Username</th>
                 <th scope="col">Full name</th>
@@ -32,9 +34,9 @@
                     <input type="text" hidden th:field="*{users[__${iter.index}__].id}"/>
                     <tr>
                         <div class="form-group">
-                            <td><input th:field="*{users[__${iter.index}__].userName}"/></td>
-                            <td><input th:field="*{users[__${iter.index}__].displayName}"/></td>
-                            <td><input th:field="*{users[__${iter.index}__].email}"/></td>
+                            <td><input type="text" th:field="*{users[__${iter.index}__].userName}"/></td>
+                            <td><input type="text" th:field="*{users[__${iter.index}__].displayName}"/></td>
+                            <td><input type="text" th:field="*{users[__${iter.index}__].email}"/></td>
                             <td>
                                 <select class="custom-select mb-2 mr-sm-2 mb-sm-0" multiple  th:field="*{users[__${iter.index}__].roles}" th:size="${availableRoles.size()}">
                                     <option th:each="role: ${availableRoles}" th:value="${role.getRole()}" th:text="${role.getRole()}" th:selected="${user.getRoles().contains(role)}"></option>

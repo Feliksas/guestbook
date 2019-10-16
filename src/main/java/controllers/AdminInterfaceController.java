@@ -48,15 +48,18 @@ public class AdminInterfaceController {
         for (String rawRole : dtoRoles) {
             Role dbRole = Role.getRoleByName(rawRole);
             if (dbRole != null) { // such a role, indeed, exists in the system
-                entity.addRole(dbRole);
+                entity.getRoles().add(dbRole);
             }
         }
 
+        List<Role> rolesToRemove = new ArrayList<>();
         for (Role userRole: entity.getRoles()) {
             if (!dtoRoles.contains(userRole.getRole())) {
-                entity.removeRole(userRole);
+                rolesToRemove.add(userRole);
             }
         }
+
+        entity.getRoles().removeAll(rolesToRemove);
     }
 
     private UserListDto listUsers() {
@@ -107,9 +110,7 @@ public class AdminInterfaceController {
         }
 
         // remove users marked for deletion from active set
-        for (User user: toDelete) {
-            dbUsers.remove(user);
-        }
+        toDelete.forEach(dbUsers::remove);
 
         // now we should only have new users in DTO
         for (UserDto dtoUser: dtoUsers) {

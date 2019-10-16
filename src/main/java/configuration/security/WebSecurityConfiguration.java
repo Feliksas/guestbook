@@ -42,6 +42,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 "/popper/**",
                 "/webfonts/**",
                 "/fa/**",
+                "/css/**",
                 "/error*",
                 "/console/**",
                 "/scrypthash",
