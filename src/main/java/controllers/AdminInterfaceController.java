@@ -39,7 +39,7 @@ public class AdminInterfaceController {
         entity.setActive(dto.getActive());
 
         String rawPassword = dto.getPassword();
-        if (rawPassword != null) {
+        if (rawPassword != null && rawPassword != "") {
             entity.setPassword(new SCryptPasswordEncoder().encode(rawPassword));
         }
 

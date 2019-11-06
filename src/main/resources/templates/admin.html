@@ -14,6 +14,7 @@
 
     <link href="../static/bootstrap/css/bootstrap.css" rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.css}"/>
     <link href="../static/fa/all.css" rel="stylesheet" th:href="@{/fa/all.css}">
+    <script src="../static/js/admin.js" th:src="@{/js/admin.js}"></script>
     <link href="../static/css/main.css" rel="stylesheet" th:href="@{/css/main.css}"/>
 </head>
 
@@ -33,7 +34,6 @@
                 <th:block th:each="user,iter : *{users}">
                     <input type="text" hidden th:field="*{users[__${iter.index}__].id}"/>
                     <tr>
-                        <div class="form-group">
                             <td><input type="text" th:field="*{users[__${iter.index}__].userName}"/></td>
                             <td><input type="text" th:field="*{users[__${iter.index}__].displayName}"/></td>
                             <td><input type="text" th:field="*{users[__${iter.index}__].email}"/></td>
@@ -47,8 +47,8 @@
                                 <label th:for="*{users[__${iter.index}__].active}">Active</label>
                                 <input type="checkbox" th:field="*{users[__${iter.index}__].delete}"/>
                                 <label th:for="*{users[__${iter.index}__].delete}">Delete</label>
+                                <button type="button" class="btn btn-primary" th:onclick="|showChangePassField(${iter.index})|">Change password</button>
                             </td>
-                        </div>
                     </tr>
                 </th:block>
             </tbody>

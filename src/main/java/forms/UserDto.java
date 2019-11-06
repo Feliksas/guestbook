@@ -24,7 +24,7 @@ public class UserDto {
 
     @Size(min=3, max=255)
     private String displayName;
-
+    
     private String password;
 
     @NotNull
