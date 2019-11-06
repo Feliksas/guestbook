@@ -31,8 +31,8 @@ public class AdminInterfaceController {
     @Autowired
     RoleRepository roleRepository;
 
-
-    private void fromDtoToEntity (UserDto dto, User entity) {
+    @Transactional
+    void fromDtoToEntity (UserDto dto, User entity) {
         entity.setUserName(dto.getUserName());
         entity.setDisplayName(dto.getDisplayName());
         entity.setEmail(dto.getEmail());

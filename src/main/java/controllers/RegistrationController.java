@@ -34,15 +34,14 @@ public class RegistrationController {
     public RegistrationForm showRegistrationForm() { return new RegistrationForm(); }
 
     @GetMapping(path="/register")
-    public String newUserRegistration(Model model) {
+    public String newUserRegistration() {
         return REGISTRATION_VIEW;
     }
 
     @PostMapping(path="/register")
     public String doRegister(@Valid RegistrationForm registrationForm,
                              BindingResult bindingResult,
-                             Model model,
-                             RedirectAttributes redirectAttributes) {
+                             Model model) {
         if (bindingResult.hasErrors()) {
             log.info(bindingResult.getAllErrors().toString());
             model.addAttribute(MESSAGE_ATTR, MESSAGE_FAIL);

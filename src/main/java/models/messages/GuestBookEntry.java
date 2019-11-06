@@ -25,13 +25,20 @@ public class GuestBookEntry {
     private Integer id;
 
     @Basic(optional = false)
+    @Column(name = "POSTER_ID")
+    private Integer posterId;
+
+    @Builder.Default
+    @Column(name = "PARENT_MSG_ID")
+    private Integer parentMsgId =  null;
+
+    @Basic(optional = false)
     private String name;
 
     @Basic(optional = false)
     private String email;
 
     @Column(columnDefinition = "TEXT")
-    @Basic(optional = false)
     private String content;
 
     @Basic(optional = false)

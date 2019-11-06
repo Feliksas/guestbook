@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Message</title>
+</head>
+<body>
+<div th:fragment="messageBlock (type, entry)" th:class="|blockquote clearfix ${type}|">
+    <input type="hidden" class="message-id" th:value="${entry.id}">
+    <!-- <input type="hidden" class="parent-message-id" th:field="${guestBookEntries.entries[__${iter.index}__].}"> -->
+    <h4 th:text="${entry.name}"></h4>
+    <h6 th:text="${entry.email}"></h6>
+    <small class="text-muted" th:text="${#temporals.format(entry.timeStamp,'dd/MMM/yyyy HH:mm')}"></small>
+    <div style="width:50%">
+        <textarea readonly maxlength="65535" rows="1" style="border: none; resize: both; width: 100%" class="message" onchange="displaySave(this.parentElement.parentElement)" th:text="${entry.content}"
+         placeholder="<message deleted>"></textarea>
+        <th:block sec:authorize="isAuthenticated()">
+            <button type="button" class="btn btn-info reply" onclick="addReply(this.parentElement.parentElement)">reply</button>
+            <button type="button" th:if="${(entry.posterId == #authentication.getPrincipal().getId()) OR #authentication.getPrincipal().isAdmin()}" class="btn btn-warning edit" onclick="focusMessage(this.parentElement.parentElement)">edit</button>
+            <button type="button" th:if="${(entry.posterId == #authentication.getPrincipal().getId()) OR #authentication.getPrincipal().isAdmin()}" class="btn btn-danger delete" onclick="deleteEntry(this.parentElement.parentElement)">delete</button>
+            <button type="button" hidden class="btn btn-primary save" onclick="submitGuestBookEntry(this.parentElement.parentElement, -1)">save</button>
+        </th:block>
+    </div>
+    <th:block th:each="subEntry: ${entry.replies}">
+        <div th:replace="fragments/message.html
+                      :: messageBlock (type='message-block-child', entry=${subEntry})">
+        </div>
+    </th:block>
+</div>
+</body>
+</html>

@@ -40,7 +40,7 @@ public class UserDto {
     @NotNull
     private List<String> roles;
 
-    public UserDto(User user) {
+    UserDto(User user) {
         this.id = user.getId();
         this.userName = user.getUserName();
         this.displayName = user.getDisplayName();

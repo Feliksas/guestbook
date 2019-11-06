@@ -10,8 +10,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class H2ConsoleConfiguration implements WebMvcConfigurer {
     @Bean
-    ServletRegistrationBean h2servletRegistration() {
-        ServletRegistrationBean registrationBean = new ServletRegistrationBean(new WebServlet());
+    ServletRegistrationBean<WebServlet> h2servletRegistration() {
+        ServletRegistrationBean<WebServlet> registrationBean = new ServletRegistrationBean<>(new WebServlet());
         registrationBean.addUrlMappings("/console/*");
         return registrationBean;
     }

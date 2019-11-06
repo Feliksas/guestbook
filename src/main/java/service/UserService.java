@@ -1,8 +1,6 @@
 package service;
 
 
-import java.util.Collections;
-import java.util.HashSet;
 import exceptions.AccountExistsException;
 import exceptions.EmailExistsException;
 import exceptions.UserNameExistsException;
@@ -27,7 +25,7 @@ public class UserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUserNameOrEmailWithEagerRoles(username, username);
+        User user = userRepository.findByUserNameOrEmailWithEagerRoles(username);
         if (user == null) {
             throw new UsernameNotFoundException(username);
         }
@@ -35,7 +33,7 @@ public class UserService implements UserDetailsService {
         return new UserPrincipal(user);
     }
 
-    public User registerNewUserAccount(User user) throws AccountExistsException {
+    public void registerNewUserAccount(User user) throws AccountExistsException {
         String email = user.getEmail();
         String userName = user.getUserName();
 
@@ -51,7 +49,7 @@ public class UserService implements UserDetailsService {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
             user.setActive(true);
 
-            return userRepository.save(user);
+            userRepository.save(user);
         }
     }
 

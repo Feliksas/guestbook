@@ -43,9 +43,11 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 "/webfonts/**",
                 "/fa/**",
                 "/css/**",
+                "/js/**",
                 "/error*",
                 "/console/**",
                 "/scrypthash",
+                "/add",
                 "/register")
             .permitAll()
             .regexMatchers("/reviews/[0-9]+").permitAll()

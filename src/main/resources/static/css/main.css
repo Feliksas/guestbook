@@ -17,3 +17,12 @@ table td input[type="text"]{
     padding: 2px;
     box-sizing: border-box;
 }
+
+.message-block-root {
+    position: relative;
+    margin-left: 0px;
+}
+.message-block-child {
+    position: relative;
+    margin-left: 29px;
+}
