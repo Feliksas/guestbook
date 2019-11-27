@@ -34,6 +34,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import service.GuestBookEntryService;
 
 @Controller
 @Slf4j
@@ -47,162 +48,80 @@ public class GuestBookController {
     private static final String MESSAGE_ATTR = "submitResultMessage";
 
     @Autowired
-    private MessageRepository messageRepository;
-
-    @Autowired
     private UserRepository userRepository;
 
     @Autowired
+    GuestBookEntryService guestBookEntryService;
+
+    @Autowired
     SmartValidator validator;
+
+    @GetMapping(path = "/")
+    public String showGuestBook(Model model) {
+        model.addAttribute(GUESTBOOK_ENTRIES_BLOCK, guestBookEntryService.retrieveAllEntriesByPage(1));
+        return GUESTBOOK_VIEW;
+    }
+
+    @GetMapping(path = "/reviews/{page}")
+    public String showGuestBookByPage(@PathVariable("page") int page, Model model) {
+        model.addAttribute(GUESTBOOK_ENTRIES_BLOCK, guestBookEntryService.retrieveAllEntriesByPage(page));
+        return GUESTBOOK_VIEW;
+    }
 
     @PostMapping(path = "/add")
     public String addGuestBookEntry(FeedbackForm feedbackForm,
                                     BindingResult bindingResult, Model model,
                                     RedirectAttributes redirectAttributes,
                                     Principal principal) {
-        int posterId = -1;
-
-        if (principal != null) {
-            User loggedInUser = userRepository.findByUserName(principal.getName());
-            feedbackForm.setName(loggedInUser.getDisplayName());
-            feedbackForm.setEmail(loggedInUser.getEmail());
-            posterId = loggedInUser.getId();
-        }
 
         ValidationUtils.invokeValidator(validator, feedbackForm, bindingResult);
         if (bindingResult.hasErrors()) {
             log.info(bindingResult.getAllErrors().toString());
             model.addAttribute(MESSAGE_ATTR, MESSAGE_FAIL);
-            model.addAttribute(GUESTBOOK_ENTRIES_BLOCK, showGuestBookEntries(1));
+            model.addAttribute(GUESTBOOK_ENTRIES_BLOCK, guestBookEntryService.retrieveAllEntriesByPage(1));
             return GUESTBOOK_VIEW;
         }
 
+        // Prevent anons from impersonating registered users
         User existingUser = userRepository.findByDisplayNameOrEmail(feedbackForm.getName(), feedbackForm.getEmail());
-
         if (existingUser != null && principal == null) {
             bindingResult.addError(new FieldError("feedbackForm", "name", MESSAGE_USEREXISTS));
             bindingResult.addError(new FieldError("feedbackForm", "email", MESSAGE_USEREXISTS));
             model.addAttribute(MESSAGE_ATTR, MESSAGE_FAIL);
-            model.addAttribute(GUESTBOOK_ENTRIES_BLOCK, showGuestBookEntries(1));
+            model.addAttribute(GUESTBOOK_ENTRIES_BLOCK, guestBookEntryService.retrieveAllEntriesByPage(1));
             return GUESTBOOK_VIEW;
         }
 
-        GuestBookEntry guestBookEntry = GuestBookEntry.builder()
-            .timeStamp(LocalDateTime.now())
-            .name(feedbackForm.getName())
-            .email(feedbackForm.getEmail())
-            .content(feedbackForm.getFeedback())
-            .posterId(posterId)
-            .build();
+        guestBookEntryService.addEntry(feedbackForm, principal);
 
         redirectAttributes.addFlashAttribute(MESSAGE_ATTR, MESSAGE_SUCCESS);
-        messageRepository.save(guestBookEntry);
 
         return "redirect:/";
     }
 
     @PostMapping(path = "/edit")
-    @Transactional
     public String editGuestBookEntry(@Valid GuestBookEntriesListDto guestBookEntriesListDto,
                                      BindingResult bindingResult,
                                      Principal principal) {
         if (bindingResult.hasErrors()) {
             log.info(bindingResult.getAllErrors().toString());
+            return GUESTBOOK_VIEW;
         }
 
-        User loggedInUser = userRepository.findByUserName(principal.getName());
-
-        GuestBookEntryDto modifiedMessage = guestBookEntriesListDto.getEntries().get(0);
-        GuestBookEntry existingMessage = messageRepository.findById(modifiedMessage.getId());
-
-        if (existingMessage != null) {
-            if (!existingMessage.getContent().equals(modifiedMessage.getContent()) &&
-                (existingMessage.getPosterId().equals(loggedInUser.getId()) ||
-                 loggedInUser.isAdmin())) {
-
-                existingMessage.setContent(modifiedMessage.getContent());
-                messageRepository.save(existingMessage);
-            }
-        } else if(modifiedMessage.getParentMsgId() != null) {
-            GuestBookEntry reply = GuestBookEntry.builder()
-                .parentMsgId(modifiedMessage.getParentMsgId())
-                .content(modifiedMessage.getContent())
-                .email(loggedInUser.getEmail())
-                .name(loggedInUser.getDisplayName())
-                .posterId(loggedInUser.getId())
-                .timeStamp(LocalDateTime.now())
-                .build();
-            messageRepository.save(reply);
-        }
+        guestBookEntryService.modifyEntry(guestBookEntriesListDto, principal);
 
         return "redirect:/";
     }
 
     @DeleteMapping(path = "/delete")
     @ResponseStatus(HttpStatus.OK)
-    @Transactional
     public void deleteGuestBookEntry(@RequestParam(name="id") int postId,
                                      Principal principal) {
-        User loggedInUser = userRepository.findByUserName(principal.getName());
-        GuestBookEntry message = messageRepository.findById(postId);
-
-        if (message != null) {
-            if (message.getPosterId().equals(loggedInUser.getId()) ||
-                loggedInUser.isAdmin()) {
-                if (messageRepository.countChildren(postId) > 0) {
-                    message.setContent(null);
-                    messageRepository.save(message);
-                } else {
-                    messageRepository.delete(message);
-                }
-            }
-        }
+        guestBookEntryService.removeEntry(postId, principal);
     }
 
     @ModelAttribute(name = "feedbackForm")
     public FeedbackForm showFeedbackForm() {
         return new FeedbackForm();
-    }
-
-    private void populateChildren(GuestBookEntryDto entryDto) {
-        List<GuestBookEntry> childEntries = messageRepository.findAllByParentMsgId(entryDto.getId());
-        for (GuestBookEntry childEntry : childEntries) {
-            GuestBookEntryDto childEntryDto = new GuestBookEntryDto(childEntry);
-            populateChildren(childEntryDto);
-            entryDto.addEntry(childEntryDto);
-        }
-    }
-
-    private GuestBookEntriesListDto showGuestBookEntries(int page) {
-        GuestBookEntriesListDto guestBookEntries = new GuestBookEntriesListDto();
-
-        PageRequest pageable = PageRequest.of(page - 1, 3, Sort.by("timeStamp").descending());
-        Page<GuestBookEntry> guestBookPage = messageRepository.findRootMsgs(pageable);
-        int totalPages = guestBookPage.getTotalPages();
-        if(totalPages > 0) {
-            List<Integer> pageNumbers = IntStream.rangeClosed(1, totalPages).boxed().collect(Collectors.toList());
-            guestBookEntries.setPages(pageNumbers);
-        }
-        for (GuestBookEntry entry : guestBookPage.getContent()) {
-            guestBookEntries.addEntry(entry);
-        }
-
-        for (GuestBookEntryDto entryDto : guestBookEntries.getEntries()) {
-            populateChildren(entryDto);
-        }
-
-        return guestBookEntries;
-    }
-
-    @GetMapping(path = "/")
-    public String showGuestBook(Model model) {
-        model.addAttribute(GUESTBOOK_ENTRIES_BLOCK, showGuestBookEntries(1));
-        return GUESTBOOK_VIEW;
-    }
-
-    @GetMapping(path = "/reviews/{page}")
-    public String showGuestBookByPage(@PathVariable("page") int page, Model model) {
-        model.addAttribute(GUESTBOOK_ENTRIES_BLOCK, showGuestBookEntries(page));
-        return GUESTBOOK_VIEW;
     }
 }

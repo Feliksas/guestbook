@@ -5,7 +5,6 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -52,14 +51,5 @@ public class UserDto {
         for (Role roleObj: user.getRoles()) {
             roles.add(roleObj.getRole());
         }
-    }
-
-    public boolean equals(User user) {
-        return user.getId() == this.id;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getId(), getUserName(), getDisplayName(), getPassword(), getEmail(), getActive(), isDelete(), getRoles());
     }
 }

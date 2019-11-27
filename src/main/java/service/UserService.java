@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.crypto.scrypt.SCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +23,9 @@ import repository.auth.UserRepository;
 public class UserService implements UserDetailsService {
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -37,15 +41,12 @@ public class UserService implements UserDetailsService {
         String email = user.getEmail();
         String userName = user.getUserName();
 
-        SCryptPasswordEncoder passwordEncoder = new SCryptPasswordEncoder();
-
         if (emailExists(email)) {
             throw new EmailExistsException(String.format("User with email %s already exists", email));
         } else if (userNameExists(userName)) {
             throw new UserNameExistsException(String.format("User with username %s already exists", userName));
         } else {
-            Role role = Role.ROLE_USER;
-            user.getRoles().add(role);
+            user.getRoles().add(Role.ROLE_USER);
             user.setPassword(passwordEncoder.encode(user.getPassword()));
             user.setActive(true);
 
