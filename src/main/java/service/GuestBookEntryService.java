@@ -34,11 +34,13 @@ public class GuestBookEntryService {
 
         PageRequest pageable = PageRequest.of(page - 1, ENTRIES_PER_PAGE, Sort.by("timeStamp").descending());
         Page<GuestBookEntry> guestBookPage = messageRepository.findRootMsgs(pageable);
+
         int totalPages = guestBookPage.getTotalPages();
         if(totalPages > 0) {
             List<Integer> pageNumbers = IntStream.rangeClosed(1, totalPages).boxed().collect(Collectors.toList());
             guestBookEntries.setPages(pageNumbers);
         }
+
         for (GuestBookEntry entry : guestBookPage.getContent()) {
             guestBookEntries.addEntry(entry);
         }
@@ -79,8 +81,7 @@ public class GuestBookEntryService {
 
         if (existingMessage != null) {
             if (!existingMessage.getContent().equals(modifiedMessage.getContent()) &&
-                (existingMessage.getPosterId().equals(loggedInUser.getId()) ||
-                    loggedInUser.isAdmin())) {
+                canModifyMessage(loggedInUser, existingMessage)) {
 
                 existingMessage.setContent(modifiedMessage.getContent());
                 messageRepository.save(existingMessage);
@@ -104,9 +105,9 @@ public class GuestBookEntryService {
         GuestBookEntry message = messageRepository.findById(postId);
 
         if (message != null) {
-            if (message.getPosterId().equals(loggedInUser.getId()) ||
-                loggedInUser.isAdmin()) {
+            if (canModifyMessage(loggedInUser, message)) {
                 if (messageRepository.countChildren(postId) > 0) {
+                    // Leave message thread intact, just zero parent message
                     message.setContent(null);
                     messageRepository.save(message);
                 } else {
@@ -123,5 +124,9 @@ public class GuestBookEntryService {
             populateChildren(childEntryDto);
             entryDto.addEntry(childEntryDto);
         }
+    }
+
+    private boolean canModifyMessage(User user, GuestBookEntry message) {
+        return user.isAdmin() || message.getPosterId().equals(user.getId());
     }
 }
