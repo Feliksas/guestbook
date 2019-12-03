@@ -94,14 +94,15 @@ public class MessageService {
     public void modifyEntry(GuestBookEntryDto editedMessage, Principal principal) {
         User loggedInUser = userRepository.findByUserName(principal.getName());
 
-        Optional<GuestBookEntry> existingMessage = messageRepository.findById(editedMessage.getId());
+        Optional<GuestBookEntry> existingMessageOpt = messageRepository.findById(editedMessage.getId());
 
-        if (existingMessage.isPresent()) {
-            if (!existingMessage.get().getContent().equals(editedMessage.getContent()) &&
-                canModifyMessage(loggedInUser, existingMessage.get().getPosterId())) {
+        if (existingMessageOpt.isPresent()) {
+            GuestBookEntry existingMessage = existingMessageOpt.get();
+            if (!existingMessage.getContent().equals(editedMessage.getContent()) &&
+                canModifyMessage(loggedInUser, existingMessage.getPosterId())) {
 
-                existingMessage.get().setContent(editedMessage.getContent());
-                messageRepository.save(existingMessage.get());
+                existingMessage.setContent(editedMessage.getContent());
+                messageRepository.save(existingMessage);
             }
         }
     }

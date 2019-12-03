@@ -34,6 +34,7 @@ public class UserPrincipal implements UserDetails {
 
     public String getEmail() { return user.getEmail(); }
 
+    // Used in Thymeleaf template
     public String getDisplayName() { return user.getDisplayName(); }
 
     public int getId() { return user.getId(); }
@@ -50,6 +51,7 @@ public class UserPrincipal implements UserDetails {
     @Override
     public boolean isEnabled() { return user.isActive(); }
 
+    // Used in Thymeleaf template
     public boolean isAdmin() {
         return user.isAdmin();
     }
