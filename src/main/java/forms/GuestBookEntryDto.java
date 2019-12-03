@@ -15,7 +15,7 @@ import models.messages.GuestBookEntry;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GuestBookEntryDto {
-    private int id;
+    private Integer id = null;
 
     private String name = null;
 

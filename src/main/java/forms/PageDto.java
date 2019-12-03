@@ -11,12 +11,14 @@ import models.messages.GuestBookEntry;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class GuestBookEntriesListDto {
+public class PageDto {
     @Valid
     private List<GuestBookEntryDto> entries = new ArrayList<>();
-    private List<Integer> pages = null;
+    private int totalPages;
 
-    public void addEntry(GuestBookEntry entry) {
-        this.entries.add(new GuestBookEntryDto(entry));
+    public GuestBookEntryDto convertAndAddEntity(GuestBookEntry entry) {
+        GuestBookEntryDto newEntryDto = new GuestBookEntryDto(entry);
+        this.entries.add(newEntryDto);
+        return newEntryDto;
     }
 }

@@ -84,7 +84,7 @@
         <div class="col-md-8">
             <nav aria-label="Pagination">
                 <ul class="pagination justify-content-center">
-                    <li class="page-item" th:each="pageNumber : ${guestBookEntries.getPages()}" >
+                    <li class="page-item" th:each="pageNumber : ${#numbers.sequence(1, guestBookEntries.totalPages)}" >
                         <a class="page-link" th:href="@{|/reviews/${pageNumber}|}" th:text="${pageNumber}">1</a>
                     </li>
                 </ul>

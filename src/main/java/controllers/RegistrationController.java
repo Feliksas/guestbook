@@ -3,6 +3,7 @@ package controllers;
 import javax.validation.Valid;
 import exceptions.AccountExistsException;
 import exceptions.EmailExistsException;
+import exceptions.UserNameExistsException;
 import forms.RegistrationForm;
 import lombok.extern.slf4j.Slf4j;
 import models.auth.User;
@@ -48,25 +49,17 @@ public class RegistrationController {
             return REGISTRATION_VIEW;
         }
 
-        User user = User.builder()
-            .userName(registrationForm.getUserName())
-            .displayName(registrationForm.getFullName())
-            .email(registrationForm.getEmail())
-            .password(registrationForm.getPassword())
-            .build();
-
         try {
-            userService.registerNewUserAccount(user);
-        } catch (AccountExistsException e) {
-            if (e instanceof EmailExistsException) {
+            userService.registerNewUserAccount(registrationForm);
+            return "redirect:/";
+        } catch (EmailExistsException e) {
                 model.addAttribute(EMAIL_EXISTS, true);
-            } else {
+        } catch (UserNameExistsException e) {
                 model.addAttribute(USER_EXISTS, true);
-            }
-            model.addAttribute(MESSAGE_ATTR, MESSAGE_FAIL);
-            return REGISTRATION_VIEW;
+        } catch (AccountExistsException e) {
+            log.debug("Unknown AccountExistsException occurred: ", e);
         }
-
-        return "redirect:/";
+        model.addAttribute(MESSAGE_ATTR, MESSAGE_FAIL);
+        return REGISTRATION_VIEW;
     }
 }

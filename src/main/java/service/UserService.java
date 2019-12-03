@@ -4,6 +4,7 @@ package service;
 import exceptions.AccountExistsException;
 import exceptions.EmailExistsException;
 import exceptions.UserNameExistsException;
+import forms.RegistrationForm;
 import lombok.extern.slf4j.Slf4j;
 import models.auth.Role;
 import models.auth.User;
@@ -12,7 +13,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.crypto.scrypt.SCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import repository.auth.UserRepository;
@@ -37,7 +37,14 @@ public class UserService implements UserDetailsService {
         return new UserPrincipal(user);
     }
 
-    public void registerNewUserAccount(User user) throws AccountExistsException {
+    public void registerNewUserAccount(RegistrationForm registrationForm) throws AccountExistsException {
+        User user = User.builder()
+            .userName(registrationForm.getUserName())
+            .displayName(registrationForm.getFullName())
+            .email(registrationForm.getEmail())
+            .password(registrationForm.getPassword())
+            .build();
+
         String email = user.getEmail();
         String userName = user.getUserName();
 
@@ -52,6 +59,11 @@ public class UserService implements UserDetailsService {
 
             userRepository.save(user);
         }
+    }
+
+    public boolean isNameOrEmailTaken(String name, String email) {
+        User existingUser = userRepository.findByDisplayNameOrEmail(name, email);
+        return existingUser != null;
     }
 
     private boolean emailExists(String email) {

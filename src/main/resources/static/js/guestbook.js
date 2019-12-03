@@ -16,9 +16,9 @@ function submitGuestBookEntry(div, parent) {
         type: "POST",
         url: "/edit",
         data: {
-            "entries[0].id": id,
-            "entries[0].parentMsgId": parent_id,
-            "entries[0].content": message
+            "id": id,
+            "parentMsgId": parent_id,
+            "content": message
         },
         complete: function (jqxhr, status) {
             location.reload();
