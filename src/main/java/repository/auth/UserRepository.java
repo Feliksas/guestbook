@@ -2,7 +2,7 @@ package repository.auth;
 
 
 import java.util.List;
-import models.auth.User;
+import domain.auth.User;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -22,6 +22,6 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Override
     List<User> findAll();
 
-    @Query("SELECT DISTINCT u FROM User u  LEFT JOIN FETCH u.roles")
+    @Query("SELECT DISTINCT u FROM User u LEFT JOIN FETCH u.roles")
     List<User> findAllWithRoles(Sort sort);
 }

@@ -1,25 +1,25 @@
-package controllers;
+package controller;
 
 import javax.validation.Valid;
 import java.security.Principal;
-import forms.FeedbackForm;
-import forms.GuestBookEntryDto;
+import dto.GuestBookEntryDTO;
+import form.FeedbackForm;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.validation.FieldError;
-import org.springframework.validation.SmartValidator;
-import org.springframework.validation.ValidationUtils;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.SmartValidator;
+import org.springframework.validation.ValidationUtils;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import service.MessageService;
 import service.UserService;
@@ -85,7 +85,7 @@ public class GuestBookController {
     }
 
     @PostMapping(path = "/edit")
-    public String editGuestBookEntry(@Valid GuestBookEntryDto guestBookEntryDto,
+    public String editGuestBookEntry(@Valid GuestBookEntryDTO guestBookEntryDto,
                                      BindingResult bindingResult,
                                      Principal principal) {
         if (bindingResult.hasErrors()) {
@@ -102,7 +102,7 @@ public class GuestBookController {
 
     @DeleteMapping(path = "/delete")
     @ResponseStatus(HttpStatus.OK)
-    public void deleteGuestBookEntry(@RequestParam(name="id") int postId,
+    public void deleteGuestBookEntry(@RequestParam(name = "id") int postId,
                                      Principal principal) {
         messageService.removeEntry(postId, principal);
     }

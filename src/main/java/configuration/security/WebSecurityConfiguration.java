@@ -1,7 +1,7 @@
 package configuration.security;
 
 
-import models.auth.Role;
+import domain.auth.Role;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,6 +18,9 @@ import service.UserService;
 @EnableWebSecurity
 public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
+    @Autowired
+    private UserService userService;
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new SCryptPasswordEncoder();
@@ -27,9 +30,6 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     public AuthenticationFailureHandler customAuthenticationFailureHandler() {
         return new CustomAuthenticationFailureHandler();
     }
-
-    @Autowired
-    private UserService userService;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -58,23 +58,23 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
             .and()
             .formLogin()
-                .loginProcessingUrl("/login")
-                .failureHandler(customAuthenticationFailureHandler())
-                .defaultSuccessUrl("/")
-                .permitAll()
+            .loginProcessingUrl("/login")
+            .failureHandler(customAuthenticationFailureHandler())
+            .defaultSuccessUrl("/")
+            .permitAll()
 
             .and()
             .logout()
-                .permitAll()
-                .logoutSuccessUrl("/?logout")
-                .deleteCookies("JSESSIONID")
+            .permitAll()
+            .logoutSuccessUrl("/?logout")
+            .deleteCookies("JSESSIONID")
 
             .and()
             .rememberMe().key("CHANGEME")
-                .rememberMeParameter("remember-me")
-                 .userDetailsService(userService)
-                .tokenValiditySeconds(86400)
-            ;
+            .rememberMeParameter("remember-me")
+            .userDetailsService(userService)
+            .tokenValiditySeconds(86400)
+        ;
         http.csrf().disable();
         http.headers().frameOptions().disable();
     }

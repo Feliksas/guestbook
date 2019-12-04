@@ -230,6 +230,7 @@ button {
   border-radius: 0;
 }
 
+/*noinspection ALL*/
 button:focus {
   outline: 1px dotted;
   outline: 5px auto -webkit-focus-ring-color;
@@ -3751,6 +3752,7 @@ input[type="button"].btn-block {
   background-color: rgba(0, 123, 255, 0.5);
 }
 
+/*noinspection ALL*/
 .custom-select {
   display: inline-block;
   width: 100%;

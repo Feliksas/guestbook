@@ -1,21 +1,21 @@
-package forms;
+package dto;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
+import domain.auth.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import models.auth.User;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserListDto {
+public class UserListDTO {
     @Valid
-    private List<UserDto> users = new ArrayList<>();
+    private List<UserDTO> users = new ArrayList<>();
 
     public void addUser(User user) {
-        this.users.add(new UserDto(user));
+        this.users.add(new UserDTO(user));
     }
 }

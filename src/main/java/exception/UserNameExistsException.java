@@ -1,4 +1,4 @@
-package exceptions;
+package exception;
 
 public class UserNameExistsException extends AccountExistsException {
     public UserNameExistsException(String errorMessage) {

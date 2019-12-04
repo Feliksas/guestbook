@@ -1,14 +1,12 @@
-package controllers;
+package controller;
 
 import javax.validation.Valid;
 import java.util.List;
-import forms.UserDto;
-import forms.UserListDto;
+import domain.auth.Role;
+import dto.UserDTO;
+import dto.UserListDTO;
 import lombok.extern.slf4j.Slf4j;
-import models.auth.Role;
-import models.auth.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -23,41 +21,32 @@ import service.UserDTOService;
 @Slf4j
 public class AdminInterfaceController {
     private static final String ADMIN_VIEW = "admin";
-
-    @Autowired
-    private UserRepository userRepository;
     @Autowired
     RoleRepository roleRepository;
     @Autowired
     UserDTOService userDTOService;
+    @Autowired
+    private UserRepository userRepository;
 
-    @PostMapping(path="/admin")
+    @SuppressWarnings("SpringMVCViewInspection")
+    @PostMapping(path = "/admin")
     @Transactional
-    public String saveUsers(@Valid UserListDto form, BindingResult bindingResult) {
+    public String saveUsers(@Valid UserListDTO form, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             log.info(bindingResult.getAllErrors().toString());
             return ADMIN_VIEW;
         }
 
-        List<UserDto> dtoUsers = form.getUsers();
-        userDTOService.persistDtoList(dtoUsers);
+        List<UserDTO> dtoUsers = form.getUsers();
+        userDTOService.persistDTOList(dtoUsers);
 
         return "redirect:/admin";
     }
 
-    @GetMapping(path="/admin")
+    @GetMapping(path = "/admin")
     public String showAdminPanel(Model model) {
-        model.addAttribute("usersTable", listUsers());
+        model.addAttribute("usersTable", userDTOService.listUsers());
         model.addAttribute("availableRoles", Role.getAllRoles());
         return ADMIN_VIEW;
-    }
-
-    private UserListDto listUsers() {
-        UserListDto dtoUsers= new UserListDto();
-        List<User> dbUsers = userRepository.findAllWithRoles(Sort.by(Sort.Direction.ASC, "userName"));
-        for (User user: dbUsers) {
-            dtoUsers.addUser(user);
-        }
-        return dtoUsers;
     }
 }

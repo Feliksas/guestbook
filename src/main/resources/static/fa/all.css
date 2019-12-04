@@ -2,6 +2,7 @@
  * Font Awesome Free 5.0.8 by @fontawesome - https://fontawesome.com
  * License - https://fontawesome.com/license (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
  */
+/*noinspection ALL*/
 .fa,
 .fab,
 .fal,
@@ -1050,6 +1051,7 @@
     content: "\f1f9"
 }
 
+/*noinspection ALL*/
 .fa-cpanel:before {
     content: "\f388"
 }
@@ -3610,7 +3612,7 @@
 .fa,
 .far,
 .fas {
-    font-family: Font Awesome\ 5 Free
+    font-family: Font Awesome\ 5 Free, sans-serif
 }
 
 .fa,

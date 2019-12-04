@@ -1,23 +1,23 @@
-package forms;
+package dto;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
+import domain.message.GuestBookEntry;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import models.messages.GuestBookEntry;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class PageDto {
+public class PageDTO {
     @Valid
-    private List<GuestBookEntryDto> entries = new ArrayList<>();
+    private List<GuestBookEntryDTO> entries = new ArrayList<>();
     private int totalPages;
 
-    public GuestBookEntryDto convertAndAddEntity(GuestBookEntry entry) {
-        GuestBookEntryDto newEntryDto = new GuestBookEntryDto(entry);
+    public GuestBookEntryDTO convertAndAddEntity(GuestBookEntry entry) {
+        GuestBookEntryDTO newEntryDto = new GuestBookEntryDTO(entry);
         this.entries.add(newEntryDto);
         return newEntryDto;
     }

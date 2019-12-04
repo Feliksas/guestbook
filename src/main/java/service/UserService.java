@@ -1,13 +1,13 @@
 package service;
 
 
-import exceptions.AccountExistsException;
-import exceptions.EmailExistsException;
-import exceptions.UserNameExistsException;
-import forms.RegistrationForm;
+import domain.auth.Role;
+import domain.auth.User;
+import exception.AccountExistsException;
+import exception.EmailExistsException;
+import exception.UserNameExistsException;
+import form.RegistrationForm;
 import lombok.extern.slf4j.Slf4j;
-import models.auth.Role;
-import models.auth.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -22,10 +22,9 @@ import repository.auth.UserRepository;
 @Slf4j
 public class UserService implements UserDetailsService {
     @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
     PasswordEncoder passwordEncoder;
+    @Autowired
+    private UserRepository userRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

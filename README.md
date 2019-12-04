@@ -1,2 +1,2 @@
-# controllers
+# controller
 Test Java Spring webapp

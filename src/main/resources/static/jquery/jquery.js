@@ -40,7 +40,7 @@
 } )( typeof window !== "undefined" ? window : this, function( window, noGlobal ) {
 
 // Edge <= 12 - 13+, Firefox <=18 - 45+, IE 10 - 11, Safari 5.1 - 9+, iOS 6 - 9.1
-// throw exceptions when non-strict code (e.g., ASP.NET 4.5) accesses strict mode
+// throw exception when non-strict code (e.g., ASP.NET 4.5) accesses strict mode
 // arguments.callee.caller (trac-13335). But as of jQuery 3.0 (2016), strict mode should be common
 // enough that all such attempts are guarded in a try block.
 "use strict";
@@ -2827,7 +2827,7 @@ function nodeName( elem, name ) {
 
   return elem.nodeName && elem.nodeName.toLowerCase() === name.toLowerCase();
 
-};
+}
 var rsingleTag = ( /^<([a-z][^\/\0>:\x20\t\r\n\f]*)[\x20\t\r\n\f]*\/?>(?:<\/\1>|)$/i );
 
 
@@ -3460,18 +3460,18 @@ function adoptValue( value, resolve, reject, noValue ) {
 		} else if ( value && isFunction( ( method = value.then ) ) ) {
 			method.call( value, resolve, reject );
 
-		// Other non-thenables
+			// Other non-thenables
 		} else {
 
 			// Control `resolve` arguments by letting Array#slice cast boolean `noValue` to integer:
 			// * false: [ value ].slice( 0 ) => resolve( value )
 			// * true: [ value ].slice( 1 ) => resolve()
-			resolve.apply( undefined, [ value ].slice( noValue ) );
+			resolve.apply(undefined, [value].slice(noValue));
 		}
 
-	// For Promises/A+, convert exceptions into rejections
-	// Since jQuery.when doesn't unwrap thenables, we can skip the extra checks appearing in
-	// Deferred#then to conditionally suppress rejection.
+		// For Promises/A+, convert exception into rejections
+		// Since jQuery.when doesn't unwrap thenables, we can skip the extra checks appearing in
+		// Deferred#then to conditionally suppress rejection.
 	} catch ( value ) {
 
 		// Support: Android 4.0 only
@@ -3608,41 +3608,41 @@ jQuery.extend( {
 										// and multiple values (non-spec behavior)
 										if ( handler !== Identity ) {
 											that = undefined;
-											args = [ returned ];
+											args = [returned];
 										}
 
 										// Process the value(s)
 										// Default process is resolve
-										( special || deferred.resolveWith )( that, args );
+										(special || deferred.resolveWith)(that, args);
 									}
 								},
 
-								// Only normal processors (resolve) catch and reject exceptions
+								// Only normal processors (resolve) catch and reject exception
 								process = special ?
 									mightThrow :
-									function() {
+									function () {
 										try {
 											mightThrow();
-										} catch ( e ) {
+										} catch (e) {
 
-											if ( jQuery.Deferred.exceptionHook ) {
-												jQuery.Deferred.exceptionHook( e,
-													process.stackTrace );
+											if (jQuery.Deferred.exceptionHook) {
+												jQuery.Deferred.exceptionHook(e,
+													process.stackTrace);
 											}
 
 											// Support: Promises/A+ section 2.3.3.3.4.1
 											// https://promisesaplus.com/#point-61
-											// Ignore post-resolution exceptions
-											if ( depth + 1 >= maxDepth ) {
+											// Ignore post-resolution exception
+											if (depth + 1 >= maxDepth) {
 
 												// Only substitute handlers pass on context
 												// and multiple values (non-spec behavior)
-												if ( handler !== Thrower ) {
+												if (handler !== Thrower) {
 													that = undefined;
-													args = [ e ];
+													args = [e];
 												}
 
-												deferred.rejectWith( that, args );
+												deferred.rejectWith(that, args);
 											}
 										}
 									};
@@ -5014,20 +5014,20 @@ jQuery.event = {
 		}
 
 		// Caller can pass in an object of custom data in lieu of the handler
-		if ( handler.handler ) {
+		if (handler.handler) {
 			handleObjIn = handler;
 			handler = handleObjIn.handler;
 			selector = handleObjIn.selector;
 		}
 
-		// Ensure that invalid selectors throw exceptions at attach time
+		// Ensure that invalid selectors throw exception at attach time
 		// Evaluate against documentElement in case elem is a non-element node (e.g., document)
-		if ( selector ) {
-			jQuery.find.matchesSelector( documentElement, selector );
+		if (selector) {
+			jQuery.find.matchesSelector(documentElement, selector);
 		}
 
 		// Make sure that the handler has a unique ID, used to find/remove it later
-		if ( !handler.guid ) {
+		if (!handler.guid) {
 			handler.guid = jQuery.guid++;
 		}
 
@@ -6478,16 +6478,16 @@ function boxModelAdjustment( elem, dimension, box, isBorderBox, styles, computed
 
 	for ( ; i < 4; i += 2 ) {
 
-		// Both box models exclude margin
-		if ( box === "margin" ) {
-			delta += jQuery.css( elem, box + cssExpand[ i ], true, styles );
+		// Both box domain exclude margin
+		if (box === "margin") {
+			delta += jQuery.css(elem, box + cssExpand[i], true, styles);
 		}
 
 		// If we get here with a content-box, we're seeking "padding" or "border" or "margin"
-		if ( !isBorderBox ) {
+		if (!isBorderBox) {
 
 			// Add padding
-			delta += jQuery.css( elem, "padding" + cssExpand[ i ], true, styles );
+			delta += jQuery.css(elem, "padding" + cssExpand[i], true, styles);
 
 			// For "border" or "margin", add border
 			if ( box !== "padding" ) {
@@ -6578,20 +6578,20 @@ function getWidthOrHeight( elem, dimension, extra ) {
 		// Where not available (e.g., SVG), assume unreliable box-sizing and interpret the
 		// retrieved value as a content box dimension.
 		valueIsBorderBox = offsetProp in elem;
-		if ( valueIsBorderBox ) {
-			val = elem[ offsetProp ];
+		if (valueIsBorderBox) {
+			val = elem[offsetProp];
 		}
 	}
 
 	// Normalize "" and auto
-	val = parseFloat( val ) || 0;
+	val = parseFloat(val) || 0;
 
-	// Adjust for the element's box models
-	return ( val +
+	// Adjust for the element's box domain
+	return (val +
 		boxModelAdjustment(
 			elem,
 			dimension,
-			extra || ( isBorderBox ? "border" : "content" ),
+			extra || (isBorderBox ? "border" : "content"),
 			valueIsBorderBox,
 			styles,
 
@@ -8267,10 +8267,10 @@ jQuery.extend( {
 					val :
 
 					// Support: IE <=10 - 11 only
-					// option.text throws exceptions (#14686, #14858)
+					// option.text throws exception (#14686, #14858)
 					// Strip and collapse whitespace
 					// https://html.spec.whatwg.org/#strip-and-collapse-whitespace
-					stripAndCollapse( jQuery.text( elem ) );
+					stripAndCollapse(jQuery.text(elem));
 			}
 		},
 		select: {
@@ -9434,13 +9434,13 @@ jQuery.extend( {
 				transport.send( requestHeaders, done );
 			} catch ( e ) {
 
-				// Rethrow post-completion exceptions
-				if ( completed ) {
+				// Rethrow post-completion exception
+				if (completed) {
 					throw e;
 				}
 
 				// Propagate others as results
-				done( -1, e );
+				done(-1, e);
 			}
 		}
 
@@ -10021,7 +10021,7 @@ jQuery.ajaxPrefilter( "json jsonp", function( s, originalSettings, jqXHR ) {
 
 // Support: Safari 8 only
 // In Safari 8 documents created via document.implementation.createHTMLDocument
-// collapse sibling forms: the second one becomes a child of the first one.
+// collapse sibling form: the second one becomes a child of the first one.
 // Because of that, this security measure has to be disabled in Safari 8.
 // https://bugs.webkit.org/show_bug.cgi?id=137337
 support.createHTMLDocument = ( function() {
@@ -10306,7 +10306,7 @@ jQuery.fn.extend( {
 		// Subtract parent offsets and element margins
 		return {
 			top: offset.top - parentOffset.top - jQuery.css( elem, "marginTop", true ),
-			left: offset.left - parentOffset.left - jQuery.css( elem, "marginLeft", true )
+			left: offset.left - parentOffset.left - jQuery.css(elem, "marginLeft", true)
 		};
 	},
 
@@ -10316,15 +10316,15 @@ jQuery.fn.extend( {
 	// 2) For the hidden or detached element
 	// 3) For body or html element, i.e. in case of the html node - it will return itself
 	//
-	// but those exceptions were never presented as a real life use-cases
+	// but those exception were never presented as a real life use-cases
 	// and might be considered as more preferable results.
 	//
 	// This logic, however, is not guaranteed and can change at any point in the future
-	offsetParent: function() {
-		return this.map( function() {
+	offsetParent: function () {
+		return this.map(function () {
 			var offsetParent = this.offsetParent;
 
-			while ( offsetParent && jQuery.css( offsetParent, "position" ) === "static" ) {
+			while (offsetParent && jQuery.css(offsetParent, "position") === "static") {
 				offsetParent = offsetParent.offsetParent;
 			}
 

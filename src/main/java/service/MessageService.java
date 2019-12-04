@@ -4,11 +4,11 @@ import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import forms.FeedbackForm;
-import forms.PageDto;
-import forms.GuestBookEntryDto;
-import models.auth.User;
-import models.messages.GuestBookEntry;
+import domain.auth.User;
+import domain.message.GuestBookEntry;
+import dto.GuestBookEntryDTO;
+import dto.PageDTO;
+import form.FeedbackForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -16,11 +16,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import repository.auth.UserRepository;
-import repository.messages.MessageRepository;
+import repository.message.MessageRepository;
 
 @Service
 public class MessageService {
-    private static int ENTRIES_PER_PAGE = 3;
+    private static final int ENTRIES_PER_PAGE = 3;
 
     @Autowired
     private UserRepository userRepository;
@@ -28,8 +28,8 @@ public class MessageService {
     @Autowired
     private MessageRepository messageRepository;
 
-    public PageDto retrieveAllEntriesByPage(int page) {
-        PageDto guestBookEntries = new PageDto();
+    public PageDTO retrieveAllEntriesByPage(int page) {
+        PageDTO guestBookEntries = new PageDTO();
 
         PageRequest pageable = PageRequest.of(page - 1, ENTRIES_PER_PAGE, Sort.by("timeStamp").descending());
         Page<GuestBookEntry> guestBookPage = messageRepository.findRootMsgs(pageable);
@@ -43,10 +43,10 @@ public class MessageService {
         return guestBookEntries;
     }
 
-    private void populateChildren(GuestBookEntryDto entryDto) {
+    private void populateChildren(GuestBookEntryDTO entryDto) {
         List<GuestBookEntry> childEntries = messageRepository.findAllByParentMsgId(entryDto.getId());
         for (GuestBookEntry childEntry : childEntries) {
-            GuestBookEntryDto childEntryDto = new GuestBookEntryDto(childEntry);
+            GuestBookEntryDTO childEntryDto = new GuestBookEntryDTO(childEntry);
             populateChildren(childEntryDto);
             entryDto.addEntry(childEntryDto);
         }
@@ -74,7 +74,7 @@ public class MessageService {
     }
 
     @Transactional
-    public void addReply(GuestBookEntryDto newMessage, Principal principal) {
+    public void addReply(GuestBookEntryDTO newMessage, Principal principal) {
         User loggedInUser = userRepository.findByUserName(principal.getName());
 
         if (canModifyMessage(loggedInUser, newMessage.getPosterId())) {
@@ -91,7 +91,7 @@ public class MessageService {
     }
 
     @Transactional
-    public void modifyEntry(GuestBookEntryDto editedMessage, Principal principal) {
+    public void modifyEntry(GuestBookEntryDTO editedMessage, Principal principal) {
         User loggedInUser = userRepository.findByUserName(principal.getName());
 
         Optional<GuestBookEntry> existingMessageOpt = messageRepository.findById(editedMessage.getId());

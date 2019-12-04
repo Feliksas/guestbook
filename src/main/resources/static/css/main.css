@@ -18,9 +18,10 @@ table td input[type="text"]{
     box-sizing: border-box;
 }
 
+/*noinspection ALL*/
 .message-block-root {
     position: relative;
-    margin-left: 0px;
+    margin-left: 0;
 }
 .message-block-child {
     position: relative;

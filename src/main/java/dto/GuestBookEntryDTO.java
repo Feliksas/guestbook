@@ -1,20 +1,20 @@
-package forms;
+package dto;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import domain.message.GuestBookEntry;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import models.messages.GuestBookEntry;
 
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class GuestBookEntryDto {
+public class GuestBookEntryDTO {
     private Integer id = null;
 
     private String name = null;
@@ -27,13 +27,13 @@ public class GuestBookEntryDto {
 
     private Integer posterId = -1;
 
-    private List<GuestBookEntryDto> replies = new ArrayList<>();
+    private List<GuestBookEntryDTO> replies = new ArrayList<>();
 
-    @Size(max=65535)
+    @Size(max = 65535)
     @NotNull
     private String content;
 
-    public GuestBookEntryDto(GuestBookEntry entry) {
+    public GuestBookEntryDTO(GuestBookEntry entry) {
         this.id = entry.getId();
         this.name = entry.getName();
         this.email = entry.getEmail();
@@ -43,7 +43,7 @@ public class GuestBookEntryDto {
         this.posterId = entry.getPosterId();
     }
 
-    public void addEntry(GuestBookEntryDto entry) {
+    public void addEntry(GuestBookEntryDTO entry) {
         this.replies.add(entry);
     }
 }

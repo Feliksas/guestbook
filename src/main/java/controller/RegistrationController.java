@@ -1,10 +1,10 @@
-package controllers;
+package controller;
 
 import javax.validation.Valid;
-import exceptions.AccountExistsException;
-import exceptions.EmailExistsException;
-import exceptions.UserNameExistsException;
-import forms.RegistrationForm;
+import exception.AccountExistsException;
+import exception.EmailExistsException;
+import exception.UserNameExistsException;
+import form.RegistrationForm;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -30,14 +30,16 @@ public class RegistrationController {
     private UserService userService;
 
     @ModelAttribute("registrationForm")
-    public RegistrationForm showRegistrationForm() { return new RegistrationForm(); }
+    public RegistrationForm showRegistrationForm() {
+        return new RegistrationForm();
+    }
 
-    @GetMapping(path="/register")
+    @GetMapping(path = "/register")
     public String newUserRegistration() {
         return REGISTRATION_VIEW;
     }
 
-    @PostMapping(path="/register")
+    @PostMapping(path = "/register")
     public String doRegister(@Valid RegistrationForm registrationForm,
                              BindingResult bindingResult,
                              Model model) {
@@ -51,9 +53,9 @@ public class RegistrationController {
             userService.registerNewUserAccount(registrationForm);
             return "redirect:/";
         } catch (EmailExistsException e) {
-                model.addAttribute(EMAIL_EXISTS, true);
+            model.addAttribute(EMAIL_EXISTS, true);
         } catch (UserNameExistsException e) {
-                model.addAttribute(USER_EXISTS, true);
+            model.addAttribute(USER_EXISTS, true);
         } catch (AccountExistsException e) {
             log.debug("Unknown AccountExistsException occurred: ", e);
         }

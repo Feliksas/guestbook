@@ -1,4 +1,4 @@
-package models.messages;
+package domain.message;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -7,7 +7,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -15,7 +14,7 @@ import lombok.Builder;
 import lombok.Data;
 
 @Entity
-@Table(name="\"guest_book_entries\"")
+@Table(name = "\"guest_book_entries\"")
 @Builder
 @Data
 @AllArgsConstructor(access = AccessLevel.PUBLIC)
@@ -30,7 +29,7 @@ public class GuestBookEntry {
 
     @Builder.Default
     @Column(name = "PARENT_MSG_ID")
-    private Integer parentMsgId =  null;
+    private Integer parentMsgId = null;
 
     @Basic(optional = false)
     private String name;
@@ -45,6 +44,7 @@ public class GuestBookEntry {
     @Column(name = "\"timestamp\"")
     private LocalDateTime timeStamp;
 
+    @SuppressWarnings("unused")
     public GuestBookEntry() {
         this.timeStamp = LocalDateTime.now();
     }
