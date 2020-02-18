@@ -7,6 +7,7 @@ import java.util.Optional;
 import domain.auth.User;
 import domain.message.GuestBookEntry;
 import dto.GuestBookEntryDTO;
+import dto.GuestBookEntryListDTO;
 import dto.PageDTO;
 import form.FeedbackForm;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,41 @@ public class MessageService {
     @Autowired
     private MessageRepository messageRepository;
 
+    public GuestBookEntryListDTO retrieveAllEntries(boolean threaded) {
+        GuestBookEntryListDTO guestBookEntries = new GuestBookEntryListDTO();
+        if (threaded) {
+            List<GuestBookEntry> rootMessages = messageRepository.findRootMsgs();
+            convertMessageListToDTO(rootMessages, guestBookEntries);
+
+            for (GuestBookEntryDTO entry : guestBookEntries.getMessages()) {
+                populateChildren(entry);
+            }
+        } else {
+            List<GuestBookEntry> allMessages = messageRepository.findAll();
+            convertMessageListToDTO(allMessages, guestBookEntries);
+        }
+
+        return guestBookEntries;
+    }
+
+    public Optional<GuestBookEntryDTO> retrieveMessage(int messageId, boolean withThread) {
+        Optional<GuestBookEntry> messageOpt = messageRepository.findById(messageId);
+        Optional<GuestBookEntryDTO> guestBookEntryOpt = Optional.empty();
+        if (messageOpt.isPresent()) {
+            guestBookEntryOpt = Optional.of(new GuestBookEntryDTO(messageOpt.get()));
+            if (withThread) {
+                populateChildren(guestBookEntryOpt.get());
+            }
+        }
+        return guestBookEntryOpt;
+    }
+
+    private void convertMessageListToDTO(List<GuestBookEntry> messages, GuestBookEntryListDTO guestBookEntries) {
+        for (GuestBookEntry message : messages) {
+            guestBookEntries.getMessages().add(new GuestBookEntryDTO(message));
+        }
+    }
+
     public PageDTO retrieveAllEntriesByPage(int page) {
         PageDTO guestBookEntries = new PageDTO();
 
@@ -48,7 +84,7 @@ public class MessageService {
         for (GuestBookEntry childEntry : childEntries) {
             GuestBookEntryDTO childEntryDto = new GuestBookEntryDTO(childEntry);
             populateChildren(childEntryDto);
-            entryDto.addEntry(childEntryDto);
+            entryDto.addReply(childEntryDto);
         }
     }
 
@@ -56,10 +92,13 @@ public class MessageService {
     public void addEntry(FeedbackForm feedbackForm, Principal principal) {
         int posterId = -1;
         if (principal != null) {
-            User loggedInUser = userRepository.findByUserName(principal.getName());
-            feedbackForm.setName(loggedInUser.getDisplayName());
-            feedbackForm.setEmail(loggedInUser.getEmail());
-            posterId = loggedInUser.getId();
+            Optional<User> optLoggedInUser = userRepository.findByUserName(principal.getName());
+            if (optLoggedInUser.isPresent()) {
+                User loggedInUser = optLoggedInUser.get();
+                feedbackForm.setName(loggedInUser.getDisplayName());
+                feedbackForm.setEmail(loggedInUser.getEmail());
+                posterId = loggedInUser.getId();
+            }
         }
 
         GuestBookEntry guestBookEntry = GuestBookEntry.builder()
@@ -75,29 +114,32 @@ public class MessageService {
 
     @Transactional
     public void addReply(GuestBookEntryDTO newMessage, Principal principal) {
-        User loggedInUser = userRepository.findByUserName(principal.getName());
+        Optional<User> optLoggedInUser = userRepository.findByUserName(principal.getName());
 
-        if (canModifyMessage(loggedInUser, newMessage.getPosterId())) {
-            GuestBookEntry reply = GuestBookEntry.builder()
-                .parentMsgId(newMessage.getParentMsgId())
-                .content(newMessage.getContent())
-                .email(loggedInUser.getEmail())
-                .name(loggedInUser.getDisplayName())
-                .posterId(loggedInUser.getId())
-                .timeStamp(LocalDateTime.now())
-                .build();
-            messageRepository.save(reply);
+        if (optLoggedInUser.isPresent()) {
+            User loggedInUser = optLoggedInUser.get();
+            if (canModifyMessage(loggedInUser, newMessage.getPosterId())) {
+                GuestBookEntry reply = GuestBookEntry.builder()
+                    .parentMsgId(newMessage.getParentMsgId())
+                    .content(newMessage.getContent())
+                    .email(loggedInUser.getEmail())
+                    .name(loggedInUser.getDisplayName())
+                    .posterId(loggedInUser.getId())
+                    .timeStamp(LocalDateTime.now())
+                    .build();
+                messageRepository.save(reply);
+            }
         }
     }
 
     @Transactional
     public void modifyEntry(GuestBookEntryDTO editedMessage, Principal principal) {
-        User loggedInUser = userRepository.findByUserName(principal.getName());
-
+        Optional<User> optLoggedInUser = userRepository.findByUserName(principal.getName());
         Optional<GuestBookEntry> existingMessageOpt = messageRepository.findById(editedMessage.getId());
 
-        if (existingMessageOpt.isPresent()) {
+        if (existingMessageOpt.isPresent() && optLoggedInUser.isPresent()) {
             GuestBookEntry existingMessage = existingMessageOpt.get();
+            User loggedInUser = optLoggedInUser.get();
             if (!existingMessage.getContent().equals(editedMessage.getContent()) &&
                 canModifyMessage(loggedInUser, existingMessage.getPosterId())) {
 
@@ -109,16 +151,20 @@ public class MessageService {
 
     @Transactional
     public void removeEntry(int postId, Principal principal) {
-        User loggedInUser = userRepository.findByUserName(principal.getName());
-        GuestBookEntry message = messageRepository.findById(postId);
+        Optional<User> optLoggedInUser = userRepository.findByUserName(principal.getName());
+        Optional<GuestBookEntry> optMessage = messageRepository.findById(postId);
 
-        if (message != null && canModifyMessage(loggedInUser, message.getPosterId())) {
-            if (messageRepository.countChildren(postId) > 0) {
-                // Leave message thread intact, just zero parent message
-                message.setContent(null);
-                messageRepository.save(message);
-            } else {
-                messageRepository.delete(message);
+        if (optLoggedInUser.isPresent() && optMessage.isPresent()) {
+            User loggedInUser = optLoggedInUser.get();
+            GuestBookEntry message = optMessage.get();
+            if (canModifyMessage(loggedInUser, message.getPosterId())) {
+                if (messageRepository.countChildren(postId) > 0) {
+                    // Leave message thread intact, just zero parent message
+                    message.setContent(null);
+                    messageRepository.save(message);
+                } else {
+                    messageRepository.delete(message);
+                }
             }
         }
     }

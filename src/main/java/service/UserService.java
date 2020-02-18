@@ -1,6 +1,7 @@
 package service;
 
 
+import java.util.Optional;
 import domain.auth.Role;
 import domain.auth.User;
 import exception.AccountExistsException;
@@ -28,12 +29,12 @@ public class UserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUserNameOrEmailWithEagerRoles(username);
-        if (user == null) {
+        Optional<User> optUser = userRepository.findByUserNameOrEmailWithEagerRoles(username);
+        if (!optUser.isPresent()) {
             throw new UsernameNotFoundException(username);
         }
 
-        return new UserPrincipal(user);
+        return new UserPrincipal(optUser.get());
     }
 
     public void registerNewUserAccount(RegistrationForm registrationForm) throws AccountExistsException {
@@ -71,8 +72,8 @@ public class UserService implements UserDetailsService {
     }
 
     private boolean userNameExists(String userName) {
-        User user = userRepository.findByUserName(userName);
-        return user != null;
+        Optional<User> user = userRepository.findByUserName(userName);
+        return user.isPresent();
     }
 }
 

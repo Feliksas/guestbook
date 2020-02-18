@@ -8,6 +8,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
+import com.fasterxml.jackson.annotation.JsonRootName;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,6 +19,7 @@ import lombok.Data;
 @Builder
 @Data
 @AllArgsConstructor(access = AccessLevel.PUBLIC)
+@JsonRootName(value = "message")
 public class GuestBookEntry {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

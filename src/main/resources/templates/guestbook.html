@@ -43,6 +43,8 @@
         <div class="form-group">
             <label for="userName">Your name</label>
             <input  sec:authorize="isAnonymous()" type="text" class="form-control" id="userName"  th:field="*{name}" aria-describedby="nameHelp" maxlength="255" placeholder="Name Surname" required/>
+            <input class="form-control" id="userName" name="name" sec:authorize="isAuthenticated()"
+                   th:value="${#authentication.getPrincipal().getDisplayName()}" type="hidden"/>
             <input  sec:authorize="isAuthenticated()" type="text" class="form-control" id="userName" th:value="${#authentication.getPrincipal().getDisplayName()}" readonly aria-describedby="nameHelp" maxlength="255" placeholder="Name Surname" required/>
             <small id="nameHelp" class="form-text text-muted">How should we call you?</small>
             <div class="invalid-feedback" style="display: block" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Name error</div>
@@ -50,6 +52,8 @@
         <div class="form-group">
             <label for="userEmail">Your e-mail</label>
             <input sec:authorize="isAnonymous()" type="email" class="form-control" id="userEmail" th:field="*{email}" aria-describedby="emailHelp" maxlength="255" placeholder="name@service.tld" required/>
+            <input class="form-control" id="userEmail" name="email" sec:authorize="isAuthenticated()"
+                   th:value="${#authentication.getPrincipal().getEmail()}" type="hidden"/>
             <input sec:authorize="isAuthenticated()" type="email" class="form-control" id="userEmail" th:value="${#authentication.getPrincipal().getEmail()}" readonly aria-describedby="emailHelp" maxlength="255" placeholder="name@service.tld" required/>
             <small id="emailHelp" class="form-text text-muted">In case we want to contact you</small>
             <div class="invalid-feedback" style="display: block" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Email error</div>

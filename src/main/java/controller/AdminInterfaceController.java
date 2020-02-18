@@ -14,7 +14,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import repository.auth.RoleRepository;
-import repository.auth.UserRepository;
 import service.UserDTOService;
 
 @Controller
@@ -25,8 +24,7 @@ public class AdminInterfaceController {
     RoleRepository roleRepository;
     @Autowired
     UserDTOService userDTOService;
-    @Autowired
-    private UserRepository userRepository;
+
 
     @SuppressWarnings("SpringMVCViewInspection")
     @PostMapping(path = "/admin")

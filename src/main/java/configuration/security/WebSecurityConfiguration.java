@@ -53,6 +53,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
             .permitAll()
             .regexMatchers("/reviews/[0-9]+").permitAll()
             .antMatchers("/login*").permitAll()
+            .antMatchers("/api/v1/**").permitAll()
             .antMatchers("/admin/**").hasAuthority(Role.ROLE_ADMIN.getRole())
             .anyRequest().hasAnyAuthority(Role.ROLE_USER.getRole(), Role.ROLE_ADMIN.getRole())
 

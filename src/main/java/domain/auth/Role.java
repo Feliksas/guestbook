@@ -21,6 +21,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "ROLE")
 public class Role {
+
     public static final Role ROLE_ADMIN = new Role(1, "ADMIN");
     public static final Role ROLE_USER = new Role(2, "USER");
     private static final List<Role> allRoles = Arrays.asList(ROLE_ADMIN, ROLE_USER);

@@ -3,8 +3,14 @@ package dto;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlTransient;
 import java.util.ArrayList;
 import java.util.List;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonRootName;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 import domain.auth.Role;
 import domain.auth.User;
 import lombok.AllArgsConstructor;
@@ -14,6 +20,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonRootName(value = "user")
+@JacksonXmlRootElement(localName = "user")
 public class UserDTO {
     private int id;
 
@@ -24,6 +32,8 @@ public class UserDTO {
     @Size(min = 3, max = 255)
     private String displayName;
 
+    @JsonIgnore
+    @XmlTransient
     private String password;
 
     @NotNull
@@ -34,12 +44,16 @@ public class UserDTO {
     @NotNull
     private Boolean active;
 
+    @JsonIgnore
+    @XmlTransient
     private boolean delete;
 
     @NotNull
+    @JacksonXmlProperty(localName = "role")
+    @JacksonXmlElementWrapper(useWrapping = true, localName = "roles")
     private List<String> roles;
 
-    UserDTO(User user) {
+    public UserDTO(User user) {
         this.id = user.getId();
         this.userName = user.getUserName();
         this.displayName = user.getDisplayName();

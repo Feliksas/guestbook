@@ -29,6 +29,24 @@ public class UserDTOService {
         return dtoUsers;
     }
 
+    public Optional<UserDTO> retrieveUserById(int id) {
+        Optional<UserDTO> userDTOOpt = Optional.empty();
+        Optional<User> userEntityOpt = userRepository.findByIdWithRoles(id);
+        if (userEntityOpt.isPresent()) {
+            userDTOOpt = Optional.of(new UserDTO(userEntityOpt.get()));
+        }
+        return userDTOOpt;
+    }
+
+    public Optional<UserDTO> retrieveUserByName(String name) {
+        Optional<UserDTO> userDTOOpt = Optional.empty();
+        Optional<User> userEntityOpt = userRepository.findByUserNameOrEmailWithEagerRoles(name);
+        if (userEntityOpt.isPresent()) {
+            userDTOOpt = Optional.of(new UserDTO(userEntityOpt.get()));
+        }
+        return userDTOOpt;
+    }
+
     public void persistDTOList(List<UserDTO> dtos) {
         List<User> entities = userRepository.findAllWithRoles(Sort.by(Sort.Direction.ASC, "userName"));
 
